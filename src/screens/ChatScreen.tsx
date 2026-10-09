@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import type { RealtimeChannel } from '@supabase/supabase-js';
-
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { usePresence } from '../context/PresenceContext';
@@ -10,7 +10,6 @@ import { WaveComposer } from '../components/WaveComposer';
 import { MessageBubble } from '../components/MessageBubble';
 import { ImageModal } from '../components/ImageModal';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { GlassBackground } from '../components/GlassBackground';
 import { formatChatDate, getInitials } from '../lib/utils';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 
@@ -379,8 +378,10 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       if (dateStr && dateStr !== lastDateStr) {
         lastDateStr = dateStr;
         elements.push(
-          <div key={`date-${msg.id}`} className="day self-center my-2 select-none">
-            {dateStr}
+          <div key={`date-${msg.id}`} className="flex justify-center my-2.5 select-none">
+            <span className="px-3 py-1 rounded-full bg-field/80 shadow-neu-pill text-[11px] font-semibold text-muted tracking-wide">
+              {dateStr}
+            </span>
           </div>
         );
       }
@@ -402,30 +403,27 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
   };
 
   return (
-    <div className="relative h-dvh w-full max-w-md mx-auto flex flex-col justify-between overflow-hidden select-none" data-s="chat">
-      {/* Dynamic Glass Ambient Orbs & Veil */}
-      <GlassBackground screen="chat" />
-
+    <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
       {/* Top Tide Header with Scroll Link */}
       <Tide screen="chat" scrollProgress={scrollProgress}>
-        <div className="absolute left-3 right-3 top-3.5 flex items-center gap-2.5 h-11 z-20">
+        <div className="absolute left-3.5 right-3.5 top-3 flex items-center gap-2.5 h-12">
           {isAdmin && onBack && (
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.9 }}
               onClick={onBack}
               aria-label="Back to inbox"
-              className="ib hit w-8 h-8 rounded-full flex items-center justify-center text-white hover:bg-white/15 transition-all flex-shrink-0 cursor-pointer"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-white hover:bg-white/15 transition-all flex-shrink-0 cursor-pointer"
             >
               <ArrowLeft className="w-5 h-5 stroke-[2.4]" />
-            </button>
+            </motion.button>
           )}
 
-          {/* Avatar */}
-          <div className="av relative w-[36px] h-[36px] rounded-full text-white flex items-center justify-center font-display font-semibold text-[15px] flex-shrink-0">
+          {/* White Avatar Circle with Anton Initial & Realtime Pulse */}
+          <div className="relative w-9 h-9 rounded-full bg-white text-tide flex items-center justify-center font-display text-[16px] shadow-neu-raised flex-shrink-0">
             {getInitials(partnerName)}
-            {/* Realtime Active status pulse dot */}
             <span
-              className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-base1 ${
+              className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-black ${
                 isPartnerOnline ? 'bg-emerald-400 animate-pulse' : 'bg-gray-400'
               }`}
             />
@@ -434,8 +432,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
           {/* Name & Realtime Status */}
           <div className="flex-1 min-w-0 flex flex-col justify-center">
             <b
-              className="font-display font-semibold text-[16px] leading-tight text-white truncate origin-left transition-transform duration-100"
-              style={{ transform: `scale(${1 - 0.08 * scrollProgress})` }}
+              className="font-display font-normal text-[20px] leading-tight text-white truncate origin-left transition-transform duration-100"
+              style={{ transform: `scale(${1 - 0.12 * scrollProgress})` }}
             >
               {partnerName}
             </b>
@@ -443,29 +441,31 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
                   isTyping
-                    ? 'bg-acc animate-ping'
+                    ? 'bg-emerald-400 animate-ping'
                     : isPartnerOnline
                     ? 'bg-emerald-400'
                     : 'bg-white/40'
                 }`}
               />
-              <small className="text-[12px] text-white/80 block truncate leading-tight font-medium">
+              <small className="text-[11px] text-white/75 block truncate leading-tight font-medium">
                 {isTyping ? 'typing…' : isPartnerOnline ? 'Active now' : 'Offline'}
               </small>
             </div>
           </div>
 
-          {/* Sun / Moon Theme Toggle */}
+          {/* Theme Toggle Button */}
           <ThemeToggle />
 
           {/* Outlined Log out Pill */}
-          <button
+          <motion.button
             type="button"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.95 }}
             onClick={logout}
-            className="lo hit h-[34px] px-3.5 rounded-[17px] border border-white/40 text-white text-[12px] font-bold hover:bg-white/15 transition-all flex-shrink-0 select-none flex items-center justify-center cursor-pointer"
+            className="h-9 px-3.5 rounded-full border border-white/40 text-white text-xs font-semibold hover:bg-white/15 transition-all flex-shrink-0 select-none flex items-center justify-center cursor-pointer"
           >
             Log out
-          </button>
+          </motion.button>
         </div>
       </Tide>
 
@@ -473,7 +473,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       <div
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="flex-1 w-full overflow-y-auto px-3.5 pt-[104px] pb-[80px] flex flex-col gap-1.5"
+        className="flex-1 w-full overflow-y-auto px-3.5 pt-[104px] pb-[84px] flex flex-col gap-1.5"
       >
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center text-muted gap-2">
@@ -489,25 +489,29 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
             )}
 
             {messages.length === 0 && (
-              <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-muted my-auto">
-                <div className="w-14 h-14 rounded-full bg-glass border border-gb flex items-center justify-center text-ink font-bold text-2xl mb-3 shadow-md">
-                  ✨
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex-1 flex flex-col items-center justify-center text-center p-6 text-muted my-auto"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-field flex items-center justify-center text-ink font-bold text-2xl mb-3 shadow-neu-raised">
+                  💬
                 </div>
-                <h3 className="font-display text-xl text-ink mb-1 font-bold">Hey {partnerName}!</h3>
+                <h3 className="font-display text-xl text-ink mb-1 tracking-wide">Hey there!</h3>
                 <p className="text-xs max-w-xs text-muted leading-relaxed">
-                  Start your private, encrypted 1:1 conversation.
+                  Send your first message to begin this private 1:1 conversation.
                 </p>
-              </div>
+              </motion.div>
             )}
 
             {renderMessageList()}
 
             {/* Realtime Typing Indicator */}
             {isTyping && (
-              <div className="dots on flex items-center gap-1 p-2 self-start" aria-label="typing">
-                <i />
-                <i />
-                <i />
+              <div className="flex items-center gap-1 p-2 self-start" aria-label="typing">
+                <span className="w-1.5 h-1.5 rounded-full bg-ink animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-ink animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-ink animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
             )}
           </>
@@ -529,4 +533,3 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     </div>
   );
 };
-

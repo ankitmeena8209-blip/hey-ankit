@@ -10,80 +10,63 @@ interface TideProps {
 }
 
 const BASE_HEIGHTS: Record<ScreenType, number> = {
-  welcome: 380,
-  auth: 150,
-  chat: 92,
-  admin: 148,
+  welcome: 360,
+  auth: 140,
+  chat: 88,
+  admin: 140,
 };
 
 const SCROLL_DELTAS: Record<ScreenType, number> = {
   welcome: 0,
   auth: 0,
   chat: 8,
-  admin: 50,
+  admin: 44,
 };
 
 export const Tide: React.FC<TideProps> = ({ screen, scrollProgress = 0, children }) => {
   const baseHeight = BASE_HEIGHTS[screen];
   const delta = SCROLL_DELTAS[screen];
-  const currentHeight = Math.max(60, baseHeight - delta * scrollProgress);
+  const currentHeight = Math.max(56, baseHeight - delta * scrollProgress);
 
   return (
     <motion.div
       initial={false}
       animate={{ height: currentHeight }}
-      transition={{ duration: 0.35, ease: [0.2, 0.9, 0.3, 1] }}
-      className="absolute top-0 left-0 right-0 z-20 overflow-hidden pointer-events-none will-change-[height] transform-gpu"
+      transition={{ duration: 0.3, ease: [0.2, 0.9, 0.3, 1] }}
+      className="absolute top-0 left-0 right-0 z-20 overflow-hidden pointer-events-none will-change-[height] transform-gpu select-none"
     >
-      {/* Frosted Glass Masked Tide Body */}
-      <div className="absolute inset-0 tide-glass">
-        {/* Translucent glass wave layers */}
-        {screen === 'welcome' && (
-          <svg
-            className="absolute -left-[30%] bottom-[26px] w-[160%] h-[150px] pointer-events-none transition-opacity duration-500"
-            viewBox="0 0 640 150"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M-40 20C120 -20 240 70 350 40S560 -10 680 25V150H-40Z"
-              fill="rgba(255,255,255,0.06)"
-              stroke="rgba(255,255,255,0.2)"
-              vectorEffect="non-scaling-stroke"
-              className="animate-glass-sway-1"
-            />
-            <path
-              d="M-40 55C130 15 230 105 350 70S560 20 680 55V150H-40Z"
-              fill="rgba(255,255,255,0.09)"
-              stroke="rgba(255,255,255,0.22)"
-              vectorEffect="non-scaling-stroke"
-              className="animate-glass-sway-2"
-            />
-            <path
-              d="M-40 90C120 50 250 130 360 100S560 55 680 90V150H-40Z"
-              fill="rgba(255,255,255,0.13)"
-              stroke="rgba(255,255,255,0.26)"
-              vectorEffect="non-scaling-stroke"
-              className="animate-glass-sway-3"
-            />
-          </svg>
-        )}
-      </div>
-
-      {/* Signature Edge Stroke along Wave Curve */}
       <svg
-        className="absolute left-0 bottom-0 w-full h-[40px] overflow-visible pointer-events-none"
-        viewBox="0 0 340 40"
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        viewBox="0 0 340 380"
         preserveAspectRatio="none"
         aria-hidden="true"
       >
+        {/* Deep Black / Tide Base */}
         <path
-          d="M340 20C290 42 230 6 170 22S60 40 0 12"
-          fill="none"
-          stroke="rgba(255,255,255,0.45)"
-          strokeWidth="1.2"
-          vectorEffect="non-scaling-stroke"
+          d="M0 0 H340 V360 C290 382 230 346 170 362 S60 380 0 352 Z"
+          fill="var(--color-tide)"
         />
+
+        {/* Welcome Screen: 3 drifting wave layers */}
+        {screen === 'welcome' && (
+          <>
+            <path
+              d="M-40 270 C120 230 240 320 350 290 S560 240 680 275 V380 H-40 Z"
+              fill="var(--color-l1)"
+              className="animate-sway-1"
+            />
+            <path
+              d="M-40 300 C130 260 230 350 350 315 S560 265 680 300 V380 H-40 Z"
+              fill="var(--color-l2)"
+              className="animate-sway-2"
+            />
+            <path
+              d="M-40 330 C120 290 250 370 360 340 S560 295 680 330 V380 H-40 Z"
+              fill="var(--color-l3)"
+              className="animate-sway-3"
+            />
+          </>
+        )}
       </svg>
 
       {/* Header UI overlay content */}

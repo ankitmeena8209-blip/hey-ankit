@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext';
 import { Tide } from '../components/Tide';
 import { ValidationPill } from '../components/ValidationPill';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { GlassBackground } from '../components/GlassBackground';
 import { validateUsername } from '../lib/utils';
 
 interface AuthScreenProps {
@@ -70,23 +69,20 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
   };
 
   return (
-    <div className="relative h-dvh w-full max-w-md mx-auto flex flex-col justify-between overflow-hidden select-none" data-s="auth">
-      {/* Dynamic Glass Ambient Orbs & Veil */}
-      <GlassBackground screen="auth" />
-
+    <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
       {/* Top right Theme Switcher */}
-      <div className="absolute top-3.5 right-3.5 z-40">
+      <div className="absolute top-3.5 right-3.5 z-30">
         <ThemeToggle />
       </div>
 
       {/* Top Tide Header with Title */}
       <Tide screen="auth">
-        <div className="absolute left-6 top-12 z-20">
+        <div className="absolute left-6 top-11">
           <motion.h2
             key={mode}
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-display font-bold text-[28px] leading-none text-white tracking-tight"
+            className="font-display text-[32px] leading-none text-white tracking-wide"
           >
             {mode === 'signup' ? 'Sign up' : 'Log in'}
           </motion.h2>
@@ -94,7 +90,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       </Tide>
 
       {/* Main Form Area */}
-      <div className="relative z-10 flex-1 px-6 pt-[164px] pb-6 flex flex-col justify-between overflow-y-auto">
+      <div className="relative z-10 flex-1 px-6 pt-[156px] pb-5 flex flex-col justify-between overflow-y-auto">
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           {/* Username Field */}
           <div className="flex flex-col">
@@ -116,7 +112,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                     setUsername(val);
                     setServerError(null);
                   }}
-                  className="w-full h-10 rounded-[12px] bg-field/60 border border-gb text-ink px-3 text-[14px] outline-none transition-all placeholder:text-muted/60 focus:border-acc focus:shadow-[0_0_0_3px_var(--accg)]"
+                  className="w-full h-11 rounded-xl bg-field shadow-neu-inset px-3.5 text-[14px] text-ink outline-none border border-line/40 focus:border-ink/50 transition-all placeholder:text-muted/60"
                   placeholder="e.g. being_frzi"
                 />
               </div>
@@ -147,13 +143,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                     setPassword(e.target.value);
                     setServerError(null);
                   }}
-                  className="w-full h-10 rounded-[12px] bg-field/60 border border-gb text-ink pl-3 pr-14 text-[14px] outline-none transition-all placeholder:text-muted/60 focus:border-acc focus:shadow-[0_0_0_3px_var(--accg)]"
+                  className="w-full h-11 rounded-xl bg-field shadow-neu-inset pl-3.5 pr-14 text-[14px] text-ink outline-none border border-line/40 focus:border-ink/50 transition-all placeholder:text-muted/60"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-0 top-0 h-10 px-3 text-[11px] font-bold text-muted hover:text-ink transition-colors select-none"
+                  className="absolute right-0 top-0 h-11 px-3 text-[11px] font-bold text-muted hover:text-ink transition-colors select-none cursor-pointer"
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
@@ -193,7 +189,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                         setConfirmPassword(e.target.value);
                         setServerError(null);
                       }}
-                      className="w-full h-10 rounded-[12px] bg-field/60 border border-gb text-ink px-3 text-[14px] outline-none transition-all placeholder:text-muted/60 focus:border-acc focus:shadow-[0_0_0_3px_var(--accg)]"
+                      className="w-full h-11 rounded-xl bg-field shadow-neu-inset px-3.5 text-[14px] text-ink outline-none border border-line/40 focus:border-ink/50 transition-all placeholder:text-muted/60"
                       placeholder="••••••••"
                     />
                   </div>
@@ -215,7 +211,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
             <motion.div
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-3 rounded-[12px] bg-field/80 border border-bad/40 text-bad text-xs font-semibold leading-relaxed"
+              className="p-3 rounded-xl bg-field shadow-neu-inset border border-bad/40 text-bad text-xs font-semibold leading-relaxed"
             >
               {serverError}
             </motion.div>
@@ -223,14 +219,16 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
         </form>
 
         {/* Bottom Actions */}
-        <div className="flex flex-col gap-2.5 pt-4">
-          <button
+        <div className="flex flex-col gap-2.5 pt-3">
+          <motion.button
             type="button"
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
             onClick={toggleMode}
-            className="text-[12px] font-semibold text-ink underline underline-offset-4 min-h-[44px] flex items-center justify-center transition-all cursor-pointer"
+            className="text-[12px] font-semibold text-ink px-4 py-2 rounded-xl bg-field/70 shadow-neu-pill hover:bg-field min-h-[44px] flex items-center justify-center transition-all cursor-pointer"
           >
             {mode === 'signup' ? 'Have an account? Log in' : 'New here? Create account'}
-          </button>
+          </motion.button>
 
           <motion.button
             type="button"
@@ -238,15 +236,15 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
             whileTap={isFormValid && !submitting ? { scale: 0.96 } : {}}
             disabled={!isFormValid || submitting}
             onClick={handleSubmit}
-            className={`w-full h-[44px] rounded-[13px] font-display font-semibold text-[14px] flex items-center justify-center gap-2 transition-all select-none cursor-pointer ${
+            className={`w-full h-[46px] rounded-xl font-display text-[16px] tracking-wide flex items-center justify-center gap-2 transition-all select-none cursor-pointer ${
               isFormValid
-                ? 'btn-sent sheen text-white shadow-lg'
-                : 'bg-glass text-muted border border-gb cursor-not-allowed opacity-60'
+                ? 'bg-btn text-btn-ink shadow-neu-float hover:opacity-90'
+                : 'bg-dis/40 text-white/40 cursor-not-allowed shadow-none'
             }`}
           >
             {submitting ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin text-white" />
+                <Loader2 className="w-4 h-4 animate-spin" />
                 <span>Checking…</span>
               </>
             ) : (
@@ -258,4 +256,3 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     </div>
   );
 };
-
