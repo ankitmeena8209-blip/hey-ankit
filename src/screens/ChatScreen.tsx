@@ -80,7 +80,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     ? propPartnerUsername
     : isAdmin
     ? conversation?.user?.username ?? 'Friend'
-    : 'Ankit';
+    : 'Ankit (@being_frzi)';
 
   // 2. Mark messages read
   const markRead = useCallback(async (convId: string) => {

@@ -13,7 +13,7 @@ import { getInitials, formatShortTime } from '../lib/utils';
 type AdminTab = 'chats' | 'users' | 'unsent';
 
 export const AdminInbox: React.FC = () => {
-  const { logout, user } = useAuth();
+  const { logout, profile } = useAuth();
   const [activeTab, setActiveTab] = useState<AdminTab>('chats');
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -120,7 +120,7 @@ export const AdminInbox: React.FC = () => {
       {/* Header */}
       <WaveHeader
         title={activeTab === 'chats' ? 'Friends' : activeTab === 'users' ? 'Manage Users' : 'Audit Log'}
-        subtitle={`Admin (${user?.email?.split('@')[0] || 'Ankit'})`}
+        subtitle={`Admin (@${profile?.username || 'being_frzi'})`}
         onLogout={logout}
       />
 

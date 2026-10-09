@@ -268,11 +268,19 @@ BEGIN
     RAISE EXCEPTION 'Invalid username. Must be 3-20 lowercase alphanumeric characters or underscore.';
   END IF;
 
-  -- Insert profile with locked role 'user' and status 'active'
-  INSERT INTO public.profiles (id, username, role, status)
-  VALUES (NEW.id, v_clean_username, 'user', 'active')
-  ON CONFLICT (id) DO UPDATE
-  SET username = EXCLUDED.username;
+  -- Automatically assign admin role for being_frzi or ankit
+  IF v_clean_username IN ('being_frzi', 'ankit') THEN
+    INSERT INTO public.profiles (id, username, role, status)
+    VALUES (NEW.id, v_clean_username, 'admin', 'active')
+    ON CONFLICT (id) DO UPDATE
+    SET role = 'admin', username = EXCLUDED.username;
+  ELSE
+    -- Regular friend signup
+    INSERT INTO public.profiles (id, username, role, status)
+    VALUES (NEW.id, v_clean_username, 'user', 'active')
+    ON CONFLICT (id) DO UPDATE
+    SET username = EXCLUDED.username;
+  END IF;
 
   -- Find current admin ID if exists
   SELECT id INTO v_admin_id
@@ -614,3 +622,7 @@ GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated, service_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO authenticated, service_role;
 GRANT ALL ON ALL ROUTINES IN SCHEMA public TO authenticated, service_role;
+
+-- Reload PostgREST schema cache
+NOTIFY pgrst, 'reload schema';
+

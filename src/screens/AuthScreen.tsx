@@ -127,7 +127,7 @@ export const AuthScreen: React.FC = () => {
                   }}
                   placeholder="••••••••"
                   required
-                  minLength={8}
+                  minLength={6}
                   className="w-full bg-slate-50 dark:bg-teal-950/40 text-ink rounded-xl pl-10 pr-11 py-3 text-sm border border-line outline-none focus:ring-2 focus:ring-g2 focus:border-transparent transition-all placeholder:text-muted/50"
                 />
                 <button
