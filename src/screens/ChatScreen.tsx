@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion } from 'framer-motion';
 import type { RealtimeChannel } from '@supabase/supabase-js';
+
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { usePresence } from '../context/PresenceContext';
 import type { Message, Conversation } from '../types/database';
 import { Tide } from '../components/Tide';
 import { WaveComposer } from '../components/WaveComposer';
 import { MessageBubble } from '../components/MessageBubble';
 import { ImageModal } from '../components/ImageModal';
+import { ThemeToggle } from '../components/ThemeToggle';
+import { GlassBackground } from '../components/GlassBackground';
 import { formatChatDate, getInitials } from '../lib/utils';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 
@@ -25,6 +28,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
   onBack,
 }) => {
   const { user, profile, isAdmin, logout } = useAuth();
+  const { isUserOnline } = usePresence();
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,6 +78,9 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       isMounted = false;
     };
   }, [propConversationId]);
+
+  const partnerId = isAdmin ? conversation?.user_id : conversation?.admin_id;
+  const isPartnerOnline = partnerId ? isUserOnline(partnerId) : false;
 
   const partnerName = propPartnerUsername
     ? propPartnerUsername
@@ -222,7 +229,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
           }
           typingTimeoutRef.current = setTimeout(() => {
             setIsTyping(false);
-          }, 20000);
+          }, 4000);
         }
       })
       .subscribe();
@@ -280,7 +287,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
 
   const handleSendMessage = async (
     text: string,
-    imagePayload?: { blob: Blob; ext: string }
+    imagePayload?: { blob: Blob; ext: string; isOneTime?: boolean }
   ) => {
     if (!conversation?.id || !user?.id) return;
 
@@ -308,9 +315,38 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       type: imagePath ? 'image' : 'text',
       body: text || null,
       image_path: imagePath,
+      is_one_time: imagePayload?.isOneTime ?? false,
+      viewed_by: [],
     });
 
     if (insertError) throw insertError;
+  };
+
+  const handleMarkOneTimeViewed = async (messageId: string) => {
+    if (!user?.id) return;
+    try {
+      await supabase.rpc('mark_one_time_viewed', {
+        p_message_id: messageId,
+        p_user_id: user.id,
+      });
+      // Optimistically update local message state
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.id === messageId) {
+            const currentViewed = m.viewed_by || [];
+            return {
+              ...m,
+              viewed_by: currentViewed.includes(user.id)
+                ? currentViewed
+                : [...currentViewed, user.id],
+            };
+          }
+          return m;
+        })
+      );
+    } catch (err) {
+      console.error('Failed to mark one-time viewed:', err);
+    }
   };
 
   const handleEditMessage = async (messageId: string, newBody: string) => {
@@ -343,10 +379,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       if (dateStr && dateStr !== lastDateStr) {
         lastDateStr = dateStr;
         elements.push(
-          <div key={`date-${msg.id}`} className="flex justify-center my-3 select-none">
-            <span className="px-3.5 py-1 rounded-full bg-field/70 shadow-neu-pill text-[11px] font-semibold text-muted tracking-wide">
-              {dateStr}
-            </span>
+          <div key={`date-${msg.id}`} className="day self-center my-2 select-none">
+            {dateStr}
           </div>
         );
       }
@@ -359,6 +393,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
           onEdit={handleEditMessage}
           onUnsend={handleUnsendMessage}
           onImageClick={(url) => setEnlargedImageUrl(url)}
+          onMarkOneTimeViewed={handleMarkOneTimeViewed}
         />
       );
     });
@@ -367,50 +402,70 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
   };
 
   return (
-    <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
+    <div className="relative h-dvh w-full max-w-md mx-auto flex flex-col justify-between overflow-hidden select-none" data-s="chat">
+      {/* Dynamic Glass Ambient Orbs & Veil */}
+      <GlassBackground screen="chat" />
+
       {/* Top Tide Header with Scroll Link */}
       <Tide screen="chat" scrollProgress={scrollProgress}>
-        <div className="absolute left-4 right-4 top-5 flex items-center gap-3 h-14">
+        <div className="absolute left-3 right-3 top-3.5 flex items-center gap-2.5 h-11 z-20">
           {isAdmin && onBack && (
-            <motion.button
+            <button
               type="button"
-              whileTap={{ scale: 0.9 }}
               onClick={onBack}
               aria-label="Back to inbox"
-              className="w-11 h-11 rounded-full flex items-center justify-center text-white hover:bg-white/15 transition-all flex-shrink-0"
+              className="ib hit w-8 h-8 rounded-full flex items-center justify-center text-white hover:bg-white/15 transition-all flex-shrink-0 cursor-pointer"
             >
-              <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
-            </motion.button>
+              <ArrowLeft className="w-5 h-5 stroke-[2.4]" />
+            </button>
           )}
 
-          {/* White Avatar Circle with Anton Initial */}
-          <div className="w-11 h-11 rounded-full bg-white text-tide flex items-center justify-center font-display text-[20px] shadow-neu-raised flex-shrink-0">
+          {/* Avatar */}
+          <div className="av relative w-[36px] h-[36px] rounded-full text-white flex items-center justify-center font-display font-semibold text-[15px] flex-shrink-0">
             {getInitials(partnerName)}
+            {/* Realtime Active status pulse dot */}
+            <span
+              className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-base1 ${
+                isPartnerOnline ? 'bg-emerald-400 animate-pulse' : 'bg-gray-400'
+              }`}
+            />
           </div>
 
-          {/* Name & Status */}
+          {/* Name & Realtime Status */}
           <div className="flex-1 min-w-0 flex flex-col justify-center">
             <b
-              className="font-display font-normal text-[26px] leading-tight text-white truncate origin-left transition-transform duration-100"
-              style={{ transform: `scale(${1 - 0.18 * scrollProgress})` }}
+              className="font-display font-semibold text-[16px] leading-tight text-white truncate origin-left transition-transform duration-100"
+              style={{ transform: `scale(${1 - 0.08 * scrollProgress})` }}
             >
               {partnerName}
             </b>
-            <small className="text-xs text-white/70 block truncate leading-tight font-medium">
-              {isTyping ? 'typing…' : 'online'}
-            </small>
+            <div className="flex items-center gap-1.5 min-h-[14px]">
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  isTyping
+                    ? 'bg-acc animate-ping'
+                    : isPartnerOnline
+                    ? 'bg-emerald-400'
+                    : 'bg-white/40'
+                }`}
+              />
+              <small className="text-[12px] text-white/80 block truncate leading-tight font-medium">
+                {isTyping ? 'typing…' : isPartnerOnline ? 'Active now' : 'Offline'}
+              </small>
+            </div>
           </div>
 
+          {/* Sun / Moon Theme Toggle */}
+          <ThemeToggle />
+
           {/* Outlined Log out Pill */}
-          <motion.button
+          <button
             type="button"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.95 }}
             onClick={logout}
-            className="h-10 px-4 rounded-full border border-white/40 text-white text-xs font-semibold hover:bg-white/15 transition-all flex-shrink-0 select-none flex items-center justify-center"
+            className="lo hit h-[34px] px-3.5 rounded-[17px] border border-white/40 text-white text-[12px] font-bold hover:bg-white/15 transition-all flex-shrink-0 select-none flex items-center justify-center cursor-pointer"
           >
             Log out
-          </motion.button>
+          </button>
         </div>
       </Tide>
 
@@ -418,7 +473,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       <div
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="flex-1 w-full overflow-y-auto px-4 pt-[124px] pb-[96px] flex flex-col gap-2"
+        className="flex-1 w-full overflow-y-auto px-3.5 pt-[104px] pb-[80px] flex flex-col gap-1.5"
       >
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center text-muted gap-2">
@@ -434,29 +489,25 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
             )}
 
             {messages.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex-1 flex flex-col items-center justify-center text-center p-6 text-muted my-auto"
-              >
-                <div className="w-16 h-16 rounded-3xl bg-field flex items-center justify-center text-ink font-bold text-2xl mb-3.5 shadow-neu-raised">
-                  💬
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-muted my-auto">
+                <div className="w-14 h-14 rounded-full bg-glass border border-gb flex items-center justify-center text-ink font-bold text-2xl mb-3 shadow-md">
+                  ✨
                 </div>
-                <h3 className="font-display text-2xl text-ink mb-1 tracking-wide">Hey there!</h3>
+                <h3 className="font-display text-xl text-ink mb-1 font-bold">Hey {partnerName}!</h3>
                 <p className="text-xs max-w-xs text-muted leading-relaxed">
-                  Send your first message to begin this private 1:1 conversation.
+                  Start your private, encrypted 1:1 conversation.
                 </p>
-              </motion.div>
+              </div>
             )}
 
             {renderMessageList()}
 
             {/* Realtime Typing Indicator */}
             {isTyping && (
-              <div className="flex items-center gap-1 p-2 self-start" aria-label="typing">
-                <span className="w-1.5 h-1.5 rounded-full bg-ink animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-1.5 h-1.5 rounded-full bg-ink animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-1.5 h-1.5 rounded-full bg-ink animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="dots on flex items-center gap-1 p-2 self-start" aria-label="typing">
+                <i />
+                <i />
+                <i />
               </div>
             )}
           </>
@@ -478,3 +529,4 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     </div>
   );
 };
+

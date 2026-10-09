@@ -4,6 +4,8 @@ import { Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Tide } from '../components/Tide';
 import { ValidationPill } from '../components/ValidationPill';
+import { ThemeToggle } from '../components/ThemeToggle';
+import { GlassBackground } from '../components/GlassBackground';
 import { validateUsername } from '../lib/utils';
 
 interface AuthScreenProps {
@@ -68,15 +70,23 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
   };
 
   return (
-    <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
+    <div className="relative h-dvh w-full max-w-md mx-auto flex flex-col justify-between overflow-hidden select-none" data-s="auth">
+      {/* Dynamic Glass Ambient Orbs & Veil */}
+      <GlassBackground screen="auth" />
+
+      {/* Top right Theme Switcher */}
+      <div className="absolute top-3.5 right-3.5 z-40">
+        <ThemeToggle />
+      </div>
+
       {/* Top Tide Header with Title */}
       <Tide screen="auth">
-        <div className="absolute left-6 top-14">
+        <div className="absolute left-6 top-12 z-20">
           <motion.h2
             key={mode}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-display text-[46px] leading-none text-white tracking-wide"
+            className="font-display font-bold text-[28px] leading-none text-white tracking-tight"
           >
             {mode === 'signup' ? 'Sign up' : 'Log in'}
           </motion.h2>
@@ -84,11 +94,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       </Tide>
 
       {/* Main Form Area */}
-      <div className="relative z-10 flex-1 px-6 pt-[180px] pb-6 flex flex-col justify-between overflow-y-auto">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+      <div className="relative z-10 flex-1 px-6 pt-[164px] pb-6 flex flex-col justify-between overflow-y-auto">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           {/* Username Field */}
           <div className="flex flex-col">
-            <label htmlFor="u-input" className="text-[13px] font-semibold text-ink mb-1.5">
+            <label htmlFor="u-input" className="text-[12px] font-semibold text-ink mb-1">
               Username
             </label>
             <div className="flex items-center gap-2">
@@ -106,14 +116,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                     setUsername(val);
                     setServerError(null);
                   }}
-                  className="w-full h-12 rounded-2xl bg-field shadow-neu-inset px-4 text-[15px] text-ink outline-none border border-line/30 focus:border-ink/40 transition-all placeholder:text-muted/60"
+                  className="w-full h-10 rounded-[12px] bg-field/60 border border-gb text-ink px-3 text-[14px] outline-none transition-all placeholder:text-muted/60 focus:border-acc focus:shadow-[0_0_0_3px_var(--accg)]"
                   placeholder="e.g. being_frzi"
                 />
               </div>
               <ValidationPill isValid={isUsernameValid} label="Username" />
             </div>
             <small
-              className={`text-[11px] mt-1.5 transition-colors font-medium ${
+              className={`text-[11px] mt-1 transition-colors font-medium min-h-[14px] ${
                 username && !isUsernameValid ? 'text-bad' : 'text-muted'
               }`}
             >
@@ -123,7 +133,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
           {/* Password Field */}
           <div className="flex flex-col">
-            <label htmlFor="pw-input" className="text-[13px] font-semibold text-ink mb-1.5">
+            <label htmlFor="pw-input" className="text-[12px] font-semibold text-ink mb-1">
               Password
             </label>
             <div className="flex items-center gap-2">
@@ -137,13 +147,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                     setPassword(e.target.value);
                     setServerError(null);
                   }}
-                  className="w-full h-12 rounded-2xl bg-field shadow-neu-inset pl-4 pr-14 text-[15px] text-ink outline-none border border-line/30 focus:border-ink/40 transition-all placeholder:text-muted/60"
+                  className="w-full h-10 rounded-[12px] bg-field/60 border border-gb text-ink pl-3 pr-14 text-[14px] outline-none transition-all placeholder:text-muted/60 focus:border-acc focus:shadow-[0_0_0_3px_var(--accg)]"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-0 top-0 h-12 px-3.5 text-xs font-bold text-muted hover:text-ink transition-colors select-none"
+                  className="absolute right-0 top-0 h-10 px-3 text-[11px] font-bold text-muted hover:text-ink transition-colors select-none"
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
@@ -151,7 +161,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
               <ValidationPill isValid={isPasswordValid} label="Password" />
             </div>
             <small
-              className={`text-[11px] mt-1.5 transition-colors font-medium ${
+              className={`text-[11px] mt-1 transition-colors font-medium min-h-[14px] ${
                 password && !isPasswordValid ? 'text-bad' : 'text-muted'
               }`}
             >
@@ -169,7 +179,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 transition={{ duration: 0.25, ease: 'easeOut' }}
                 className="overflow-hidden flex flex-col"
               >
-                <label htmlFor="cp-input" className="text-[13px] font-semibold text-ink mb-1.5">
+                <label htmlFor="cp-input" className="text-[12px] font-semibold text-ink mb-1">
                   Confirm password
                 </label>
                 <div className="flex items-center gap-2">
@@ -183,14 +193,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                         setConfirmPassword(e.target.value);
                         setServerError(null);
                       }}
-                      className="w-full h-12 rounded-2xl bg-field shadow-neu-inset px-4 text-[15px] text-ink outline-none border border-line/30 focus:border-ink/40 transition-all placeholder:text-muted/60"
+                      className="w-full h-10 rounded-[12px] bg-field/60 border border-gb text-ink px-3 text-[14px] outline-none transition-all placeholder:text-muted/60 focus:border-acc focus:shadow-[0_0_0_3px_var(--accg)]"
                       placeholder="••••••••"
                     />
                   </div>
                   <ValidationPill isValid={isConfirmValid && confirmPassword.length > 0} label="Confirm password" />
                 </div>
                 <small
-                  className={`text-[11px] mt-1.5 transition-colors font-medium ${
+                  className={`text-[11px] mt-1 transition-colors font-medium min-h-[14px] ${
                     confirmPassword && confirmPassword !== password ? 'text-bad' : 'text-muted'
                   }`}
                 >
@@ -205,7 +215,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
             <motion.div
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-3.5 rounded-2xl bg-field shadow-neu-inset border border-bad/40 text-bad text-xs font-medium leading-relaxed"
+              className="p-3 rounded-[12px] bg-field/80 border border-bad/40 text-bad text-xs font-semibold leading-relaxed"
             >
               {serverError}
             </motion.div>
@@ -213,16 +223,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
         </form>
 
         {/* Bottom Actions */}
-        <div className="flex flex-col gap-3 pt-4">
-          <motion.button
+        <div className="flex flex-col gap-2.5 pt-4">
+          <button
             type="button"
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
             onClick={toggleMode}
-            className="text-[13px] font-semibold text-ink px-4 py-2.5 rounded-xl bg-field/60 shadow-neu-pill hover:bg-field min-h-[44px] flex items-center justify-center transition-all"
+            className="text-[12px] font-semibold text-ink underline underline-offset-4 min-h-[44px] flex items-center justify-center transition-all cursor-pointer"
           >
             {mode === 'signup' ? 'Have an account? Log in' : 'New here? Create account'}
-          </motion.button>
+          </button>
 
           <motion.button
             type="button"
@@ -230,15 +238,15 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
             whileTap={isFormValid && !submitting ? { scale: 0.96 } : {}}
             disabled={!isFormValid || submitting}
             onClick={handleSubmit}
-            className={`w-full h-13 py-3 rounded-2xl font-display text-[20px] tracking-wider flex items-center justify-center gap-2.5 transition-all select-none ${
+            className={`w-full h-[44px] rounded-[13px] font-display font-semibold text-[14px] flex items-center justify-center gap-2 transition-all select-none cursor-pointer ${
               isFormValid
-                ? 'bg-btn text-btn-ink cursor-pointer shadow-neu-float hover:opacity-95'
-                : 'bg-dis/50 text-white/40 cursor-not-allowed shadow-none'
+                ? 'btn-sent sheen text-white shadow-lg'
+                : 'bg-glass text-muted border border-gb cursor-not-allowed opacity-60'
             }`}
           >
             {submitting ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin text-white" />
                 <span>Checking…</span>
               </>
             ) : (
@@ -250,3 +258,4 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     </div>
   );
 };
+

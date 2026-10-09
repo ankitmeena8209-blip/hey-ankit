@@ -2,11 +2,14 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { usePresence } from '../context/PresenceContext';
 import type { Conversation } from '../types/database';
 import { Tide } from '../components/Tide';
 import { AdminUsers } from './AdminUsers';
 import { AdminUnsentLog } from './AdminUnsentLog';
 import { ChatScreen } from './ChatScreen';
+import { ThemeToggle } from '../components/ThemeToggle';
+import { GlassBackground } from '../components/GlassBackground';
 import { Search, MessageSquare, Users, FileText, Loader2 } from 'lucide-react';
 import { getInitials, formatShortTime } from '../lib/utils';
 
@@ -14,6 +17,7 @@ type AdminTab = 'chats' | 'users' | 'unsent';
 
 export const AdminInbox: React.FC = () => {
   const { logout } = useAuth();
+  const { isUserOnline } = usePresence();
   const [activeTab, setActiveTab] = useState<AdminTab>('chats');
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -124,22 +128,26 @@ export const AdminInbox: React.FC = () => {
   }
 
   return (
-    <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
+    <div className="relative h-dvh w-full max-w-md mx-auto flex flex-col justify-between overflow-hidden select-none" data-s="admin">
+      {/* Dynamic Glass Ambient Orbs & Veil */}
+      <GlassBackground screen="admin" />
+
       {/* Top Tide Header with Dynamic Scroll Link */}
       <Tide screen="admin" scrollProgress={scrollProgress}>
-        <div className="absolute left-5 right-5 top-5 flex flex-col">
-          {/* Top row: Title and Log out */}
-          <div className="flex items-center justify-between h-12">
+        <div className="absolute left-4 right-3.5 top-3.5 flex flex-col z-20">
+          {/* Top row: Title, ThemeToggle and Log out */}
+          <div className="trow flex items-center gap-2 h-11">
             <h2
-              className="font-display font-normal text-[40px] sm:text-[44px] leading-none text-white tracking-wide origin-left transition-transform duration-100"
-              style={{ transform: `scale(${1 - 0.25 * scrollProgress})` }}
+              className="d flex-1 text-[24px] sm:text-[26px] font-bold text-white tracking-tight origin-left transition-transform duration-100"
+              style={{ transform: `scale(${1 - 0.15 * scrollProgress})` }}
             >
               Friends
             </h2>
+            <ThemeToggle />
             <button
               type="button"
               onClick={logout}
-              className="h-10 px-4 rounded-full border border-white/45 text-white text-xs font-semibold hover:bg-white/15 transition-colors flex items-center justify-center flex-shrink-0"
+              className="lo hit h-[34px] px-3.5 rounded-[17px] border border-white/40 text-white text-[12px] font-bold hover:bg-white/15 transition-all flex-shrink-0 select-none flex items-center justify-center cursor-pointer"
             >
               Log out
             </button>
@@ -148,19 +156,20 @@ export const AdminInbox: React.FC = () => {
           {/* Search bar (folds away smoothly on scroll) */}
           {activeTab === 'chats' && (
             <div
-              className="relative mt-2.5 transition-all overflow-hidden flex items-center"
+              className="sch relative flex items-center overflow-hidden transition-all"
               style={{
-                height: `${44 * Math.max(0, 1 - scrollProgress)}px`,
+                height: `${38 * Math.max(0, 1 - scrollProgress)}px`,
                 opacity: Math.max(0, 1 - scrollProgress * 1.5),
+                marginTop: `${8 * Math.max(0, 1 - scrollProgress)}px`,
               }}
             >
-              <Search className="absolute left-3.5 w-4 h-4 text-muted pointer-events-none z-10" />
+              <Search className="absolute left-3 w-4 h-4 text-white/80 pointer-events-none z-10" />
               <input
                 type="text"
                 placeholder="Search username"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-10 rounded-xl bg-surface text-ink pl-10 pr-3.5 text-xs font-medium outline-none shadow-neu-inset border border-line/30"
+                className="w-full h-[38px] rounded-[12px] bg-white/15 text-white placeholder:text-white/70 pl-9 pr-3 text-xs font-medium outline-none border border-white/30 transition-all"
               />
             </div>
           )}
@@ -171,10 +180,10 @@ export const AdminInbox: React.FC = () => {
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col pt-[180px] pb-[86px]"
+        className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col pt-[156px] pb-[80px]"
       >
         {activeTab === 'chats' && (
-          <div className="flex-1 w-full px-4 flex flex-col">
+          <div className="flex-1 w-full px-3.5 flex flex-col">
             {loading ? (
               <div className="py-12 flex flex-col items-center justify-center text-muted gap-2">
                 <Loader2 className="w-6 h-6 animate-spin text-ink" />
@@ -185,55 +194,60 @@ export const AdminInbox: React.FC = () => {
                 {searchQuery ? 'No friends match your search.' : 'No conversations yet.'}
               </div>
             ) : (
-              <div className="flex flex-col gap-2.5">
+              <div className="flex flex-col gap-1.5">
                 {filteredConversations.map((conv) => {
                   const friendUsername = conv.user?.username ?? 'Friend';
+                  const isOnline = isUserOnline(conv.user_id);
                   const lastMsg = conv.last_message;
                   const lastText = lastMsg
                     ? lastMsg.type === 'image'
-                      ? '📷 Photo'
+                      ? lastMsg.is_one_time ? '📷 View once photo' : '📷 Photo'
                       : lastMsg.body
                     : 'No messages yet';
                   const timeStr = lastMsg ? formatShortTime(lastMsg.created_at) : '';
                   const unread = conv.unread_count ?? 0;
 
                   return (
-                    <motion.div
+                    <div
                       key={conv.id}
-                      whileHover={{ scale: 1.01, y: -1 }}
-                      whileTap={{ scale: 0.98 }}
                       onClick={() => setSelectedConv({ id: conv.id, username: friendUsername })}
-                      className="flex items-center gap-3.5 p-3 rounded-2xl bg-field/50 shadow-neu-flat hover:shadow-neu-raised cursor-pointer transition-all border border-line/30"
+                      className="lst flex items-center gap-3 p-2.5 rounded-[15px] hover:bg-glass transition-all cursor-pointer select-none"
                     >
-                      {/* Avatar with unread ring */}
-                      <div
-                        className={`w-[46px] h-[46px] rounded-full bg-btn text-btn-ink font-display text-[20px] flex items-center justify-center flex-shrink-0 shadow-neu-raised ${
-                          unread > 0 ? 'ring-2 ring-surface ring-offset-2 ring-offset-ink' : ''
-                        }`}
-                      >
+                      {/* Avatar with live status indicator */}
+                      <div className="av relative w-[38px] h-[38px] rounded-full text-white font-display text-[15px] flex items-center justify-center flex-shrink-0">
                         {getInitials(friendUsername)}
+                        <span
+                          className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-base1 ${
+                            isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-gray-400'
+                          }`}
+                        />
                       </div>
 
                       {/* Message info */}
-                      <div className="flex-1 min-w-0 flex flex-col justify-center">
-                        <b className="font-heading font-bold text-[15px] text-ink truncate leading-tight">
-                          {friendUsername}
-                        </b>
-                        <p className="text-[13px] text-muted truncate mt-0.5 leading-tight">
+                      <div className="m flex-1 min-w-0 flex flex-col justify-center">
+                        <div className="flex items-center gap-1.5">
+                          <b className="text-[14px] text-ink font-bold truncate leading-tight">
+                            {friendUsername}
+                          </b>
+                          {isOnline && (
+                            <span className="text-[10px] text-emerald-500 font-semibold">online</span>
+                          )}
+                        </div>
+                        <p className="text-[12px] text-muted truncate mt-0.5 leading-tight">
                           {lastText}
                         </p>
                       </div>
 
                       {/* Time and Unread Badge */}
-                      <div className="flex flex-col items-end gap-1.5 flex-shrink-0 text-xs text-muted font-medium">
-                        {timeStr && <span className="text-[11px]">{timeStr}</span>}
+                      <div className="e flex flex-col items-end gap-1 flex-shrink-0 text-[11px] text-muted font-medium">
+                        {timeStr && <span>{timeStr}</span>}
                         {unread > 0 && (
-                          <span className="bg-badge text-badge-ink rounded-full min-w-[20px] px-2 py-0.5 text-[11px] font-bold text-center shadow-neu-pill">
+                          <span className="bd2 text-white rounded-[9px] min-w-[18px] px-1.5 py-0.5 text-[11px] font-bold text-center">
                             {unread}
                           </span>
                         )}
                       </div>
-                    </motion.div>
+                    </div>
                   );
                 })}
               </div>
@@ -245,21 +259,21 @@ export const AdminInbox: React.FC = () => {
         {activeTab === 'unsent' && <AdminUnsentLog />}
       </div>
 
-      {/* Floating Bottom Tab Bar with Spring Sliding Indicator */}
-      <div className="absolute bottom-3.5 left-4 right-4 z-30 h-[56px] rounded-full bg-field shadow-neu-float border border-line/30 flex items-center p-1.5 select-none">
+      {/* Floating Bottom Tab Bar with Glass Mask */}
+      <div className="tabs pop absolute bottom-3 left-5 right-5 z-30 h-[46px] rounded-[23px] bg-glass border border-gb backdrop-blur-xl shadow-lg flex items-center p-1 select-none">
         <button
           type="button"
           onClick={() => setActiveTab('chats')}
-          className={`relative flex-1 h-full rounded-full flex items-center justify-center gap-1.5 text-[13px] font-semibold transition-colors z-10 ${
-            activeTab === 'chats' ? 'text-btn-ink' : 'text-muted hover:text-ink'
+          className={`relative flex-1 h-full rounded-[19px] flex items-center justify-center gap-1.5 text-[12px] font-bold transition-colors z-10 cursor-pointer ${
+            activeTab === 'chats' ? 'text-white' : 'text-muted hover:text-ink'
           }`}
         >
-          <MessageSquare className="w-4 h-4" />
+          <MessageSquare className="w-3.5 h-3.5" />
           <span>Chats</span>
           {activeTab === 'chats' && (
             <motion.div
-              layoutId="admin-tab-pill"
-              className="absolute inset-0 bg-btn rounded-full -z-10 shadow-neu-flat"
+              layoutId="admin-glass-tab"
+              className="absolute inset-0 btn-sent rounded-[19px] -z-10 shadow-md"
               transition={{ type: 'spring', stiffness: 500, damping: 35 }}
             />
           )}
@@ -268,16 +282,16 @@ export const AdminInbox: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveTab('users')}
-          className={`relative flex-1 h-full rounded-full flex items-center justify-center gap-1.5 text-[13px] font-semibold transition-colors z-10 ${
-            activeTab === 'users' ? 'text-btn-ink' : 'text-muted hover:text-ink'
+          className={`relative flex-1 h-full rounded-[19px] flex items-center justify-center gap-1.5 text-[12px] font-bold transition-colors z-10 cursor-pointer ${
+            activeTab === 'users' ? 'text-white' : 'text-muted hover:text-ink'
           }`}
         >
-          <Users className="w-4 h-4" />
+          <Users className="w-3.5 h-3.5" />
           <span>Users</span>
           {activeTab === 'users' && (
             <motion.div
-              layoutId="admin-tab-pill"
-              className="absolute inset-0 bg-btn rounded-full -z-10 shadow-neu-flat"
+              layoutId="admin-glass-tab"
+              className="absolute inset-0 btn-sent rounded-[19px] -z-10 shadow-md"
               transition={{ type: 'spring', stiffness: 500, damping: 35 }}
             />
           )}
@@ -286,16 +300,16 @@ export const AdminInbox: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveTab('unsent')}
-          className={`relative flex-1 h-full rounded-full flex items-center justify-center gap-1.5 text-[13px] font-semibold transition-colors z-10 ${
-            activeTab === 'unsent' ? 'text-btn-ink' : 'text-muted hover:text-ink'
+          className={`relative flex-1 h-full rounded-[19px] flex items-center justify-center gap-1.5 text-[12px] font-bold transition-colors z-10 cursor-pointer ${
+            activeTab === 'unsent' ? 'text-white' : 'text-muted hover:text-ink'
           }`}
         >
-          <FileText className="w-4 h-4" />
+          <FileText className="w-3.5 h-3.5" />
           <span>Unsent</span>
           {activeTab === 'unsent' && (
             <motion.div
-              layoutId="admin-tab-pill"
-              className="absolute inset-0 bg-btn rounded-full -z-10 shadow-neu-flat"
+              layoutId="admin-glass-tab"
+              className="absolute inset-0 btn-sent rounded-[19px] -z-10 shadow-md"
               transition={{ type: 'spring', stiffness: 500, damping: 35 }}
             />
           )}
@@ -304,3 +318,4 @@ export const AdminInbox: React.FC = () => {
     </div>
   );
 };
+

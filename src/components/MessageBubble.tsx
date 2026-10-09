@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, CheckCheck, X, Check as CheckIcon } from 'lucide-react';
+import { Clock, Lock } from 'lucide-react';
 import type { Message } from '../types/database';
+import { isMediaExpired } from '../types/database';
+
 import { formatMessageTime, getSignedImageUrl } from '../lib/utils';
+import { useAuth } from '../context/AuthContext';
 
 interface MessageBubbleProps {
   message: Message;
@@ -10,6 +13,7 @@ interface MessageBubbleProps {
   onEdit: (messageId: string, newBody: string) => Promise<void>;
   onUnsend: (messageId: string) => Promise<void>;
   onImageClick?: (url: string) => void;
+  onMarkOneTimeViewed?: (messageId: string) => Promise<void>;
 }
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
@@ -18,7 +22,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   onEdit,
   onUnsend,
   onImageClick,
+  onMarkOneTimeViewed,
 }) => {
+  const { user, isAdmin } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(message.body ?? '');
@@ -28,6 +34,16 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const [showUnsendConfirm, setShowUnsendConfirm] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const mediaExpired = message.type === 'image' && isMediaExpired(message.created_at);
+
+  // Check if one-time media has already been viewed by this normal user
+  const isOneTime = Boolean(message.is_one_time);
+  const userHasViewed = Boolean(
+    user?.id && message.viewed_by && message.viewed_by.includes(user.id)
+  );
+  // Normal user cannot view again once viewed; admin can always view
+  const isOneTimeLocked = isOneTime && userHasViewed && !isAdmin;
 
   // Live 20s countdown for edit window
   useEffect(() => {
@@ -46,10 +62,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     return () => clearInterval(interval);
   }, [message.created_at, isSent, message.type]);
 
-  // Load signed image URL if needed
+  // Load signed image URL if needed and not expired
   useEffect(() => {
     let isMounted = true;
-    if (message.type === 'image' && message.image_path) {
+    if (message.type === 'image' && message.image_path && !mediaExpired && !isOneTimeLocked) {
       if (message.signed_url) {
         setImageUrl(message.signed_url);
         return;
@@ -66,7 +82,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [message.type, message.image_path, message.signed_url]);
+  }, [message.type, message.image_path, message.signed_url, mediaExpired, isOneTimeLocked]);
 
   // Close popup menu on outside click
   useEffect(() => {
@@ -107,128 +123,147 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     }
   };
 
+  const handleOneTimePhotoClick = async () => {
+    if (isOneTimeLocked || mediaExpired) return;
+    if (imageUrl) {
+      onImageClick?.(imageUrl);
+      if (!isAdmin && onMarkOneTimeViewed) {
+        await onMarkOneTimeViewed(message.id);
+      }
+    }
+  };
+
   const canEdit = isSent && message.type === 'text' && secondsRemaining > 0;
 
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        y: 12,
-        scale: 0.96,
-      }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{
-        type: 'spring',
-        stiffness: 380,
-        damping: 24,
-      }}
-      className={`relative flex flex-col my-1 max-w-[80%] select-text ${
-        isSent ? 'self-end items-end origin-bottom-right' : 'self-start items-start origin-bottom-left'
+    <div
+      className={`b ${isSent ? 's' : 'r'} rv in relative my-0.5 select-text ${
+        isSent ? 'self-end' : 'self-start'
       }`}
+      onClick={() => {
+        if (isSent && !isEditing) {
+          setMenuOpen((prev) => !prev);
+        }
+      }}
     >
-      {/* Bubble Container */}
-      <div
-        onClick={() => {
-          if (isSent && !isEditing) {
-            setMenuOpen((prev) => !prev);
-          }
-        }}
-        className={`relative px-3.5 py-2.5 transition-all ${
-          isSent
-            ? 'bubble-sent cursor-pointer active:brightness-95'
-            : 'bubble-received'
-        }`}
-      >
-        {isEditing ? (
-          <div className="flex flex-col gap-2 min-w-[220px]" onClick={(e) => e.stopPropagation()}>
-            <textarea
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
-              className="w-full text-[15px] p-2.5 rounded-xl bg-field shadow-neu-inset text-ink placeholder:text-muted outline-none resize-none border border-line/30"
-              rows={2}
-              autoFocus
-            />
-            <div className="flex items-center justify-between text-xs text-muted">
-              <span className="font-mono font-medium">{secondsRemaining}s left</span>
-              <div className="flex gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(false)}
-                  className="px-2.5 py-1.5 rounded-lg bg-field shadow-neu-pill text-ink flex items-center gap-1 font-medium text-xs hover:opacity-80"
-                >
-                  <X className="w-3.5 h-3.5" />
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveEdit}
-                  disabled={secondsRemaining <= 0}
-                  className="px-3 py-1.5 rounded-lg bg-btn text-btn-ink font-semibold flex items-center gap-1 shadow-neu-flat disabled:opacity-50 text-xs"
-                >
-                  <CheckIcon className="w-3.5 h-3.5" />
-                  Save
-                </button>
-              </div>
+      {isEditing ? (
+        <div className="flex flex-col gap-2 min-w-[220px]" onClick={(e) => e.stopPropagation()}>
+          <textarea
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            className="w-full text-[14px] p-2 rounded-[12px] bg-field border border-gb text-ink outline-none resize-none"
+            rows={2}
+            autoFocus
+          />
+          <div className="flex items-center justify-between text-xs text-muted">
+            <span className="font-mono font-medium">{secondsRemaining}s left</span>
+            <div className="flex gap-1.5">
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="px-2.5 py-1 rounded-lg bg-glass border border-gb text-ink text-xs hover:opacity-80"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveEdit}
+                disabled={secondsRemaining <= 0}
+                className="px-3 py-1 rounded-lg btn-sent text-white font-semibold text-xs disabled:opacity-50"
+              >
+                Save
+              </button>
             </div>
           </div>
-        ) : (
-          <>
-            {/* Image attachment */}
-            {message.type === 'image' && (
-              <div className="mb-1.5 overflow-hidden rounded-2xl max-w-[260px] bg-field shadow-neu-inset p-1">
-                {imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt="Chat attachment"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onImageClick?.(imageUrl);
-                    }}
-                    className="w-full max-h-72 object-cover rounded-xl cursor-zoom-in hover:opacity-95 transition-opacity"
-                  />
-                ) : imageLoading ? (
-                  <div className="w-56 h-36 flex items-center justify-center bg-field text-xs text-muted">
-                    Loading image…
+        </div>
+      ) : (
+        <>
+          {/* Image attachment */}
+          {message.type === 'image' && (
+            <div className="my-1">
+              {mediaExpired ? (
+                <div className="p-3 rounded-[12px] bg-field/60 border border-gb text-xs text-muted flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-bad flex-shrink-0" />
+                  <span>Photo expired (10 days limit)</span>
+                </div>
+              ) : isOneTime ? (
+                /* View Once photo card */
+                isOneTimeLocked ? (
+                  <div className="p-3 rounded-[12px] bg-field/40 border border-gb text-xs text-muted flex items-center gap-2">
+                    <Lock className="w-4 h-4 text-muted flex-shrink-0" />
+                    <span>Opened · View once photo</span>
                   </div>
                 ) : (
-                  <div className="w-56 h-28 flex items-center justify-center bg-field text-xs text-muted">
-                    Image unavailable
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Text body */}
-            {message.body && (
-              <p className="text-[15px] leading-relaxed break-words whitespace-pre-wrap font-normal">
-                {message.body}
-              </p>
-            )}
-
-            {/* Meta row: timestamp, edited status, read receipts */}
-            <div
-              className={`flex items-center gap-1.5 mt-1 text-[11px] font-medium select-none ${
-                isSent ? 'text-white/70 dark:text-ink/70 justify-end' : 'text-muted justify-end'
-              }`}
-            >
-              {message.edited_at && (
-                <span className="italic opacity-85 text-[10.5px]">edited ·</span>
-              )}
-              <time>{formatMessageTime(message.created_at)}</time>
-
-              {isSent && (
-                <span className="ml-0.5 inline-flex items-center" title={message.read_at ? "Read" : "Sent"}>
-                  {message.read_at ? (
-                    <CheckCheck className="w-3.5 h-3.5 stroke-[2.5] text-ok" />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOneTimePhotoClick();
+                    }}
+                    className="p-3 rounded-[14px] bg-field/60 border border-gb hover:bg-field/90 transition-all flex items-center gap-2.5 text-xs font-semibold cursor-pointer select-none"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-acc text-black font-bold flex items-center justify-center text-xs">
+                      1
+                    </div>
+                    <div className="flex flex-col text-left">
+                      <span className="text-ink">View once photo</span>
+                      <span className="text-[10.5px] text-muted font-normal">
+                        {isAdmin ? 'Admin: Unlimited views' : 'Tap to view once'}
+                      </span>
+                    </div>
+                  </button>
+                )
+              ) : (
+                /* Regular photo */
+                <div className="overflow-hidden rounded-[12px] max-w-[240px]">
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt="Chat attachment"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onImageClick?.(imageUrl);
+                      }}
+                      className="w-full max-h-64 object-cover rounded-[10px] cursor-zoom-in hover:opacity-95 transition-opacity"
+                    />
+                  ) : imageLoading ? (
+                    <div className="w-48 h-32 flex items-center justify-center bg-field text-xs text-muted">
+                      Loading photo…
+                    </div>
                   ) : (
-                    <Check className="w-3.5 h-3.5 stroke-[2.2] opacity-80" />
+                    <div className="w-48 h-24 flex items-center justify-center bg-field text-xs text-muted">
+                      Photo unavailable
+                    </div>
                   )}
-                </span>
+                </div>
               )}
             </div>
-          </>
-        )}
-      </div>
+          )}
+
+          {/* Text body */}
+          {message.body && (
+            <div className="leading-snug break-words whitespace-pre-wrap">
+              {message.body}
+            </div>
+          )}
+
+          {/* Time & Read Receipts (Single tick ✓ / Double tick ✓✓) */}
+          <time className="block text-right text-[11px] mt-0.5 opacity-80 select-none">
+            {message.edited_at && <span className="italic mr-1 text-[10px]">edited ·</span>}
+            {formatMessageTime(message.created_at)}
+            {isSent && (
+              <span
+                className={`ml-1 font-bold ${
+                  message.read_at ? 'text-[#34d399]' : 'opacity-85'
+                }`}
+                title={message.read_at ? 'Seen by user' : 'Sent'}
+              >
+                {message.read_at ? ' ✓✓' : ' ✓'}
+              </span>
+            )}
+          </time>
+        </>
+      )}
 
       {/* Floating Action Menu for Sent messages */}
       <AnimatePresence>
@@ -239,7 +274,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.6 }}
             transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            className="absolute -top-12 right-0 z-30 bg-surface text-ink rounded-2xl shadow-neu-float border border-line/40 py-1.5 px-1.5 flex items-center gap-1.5 text-xs origin-top-right"
+            className="absolute -top-11 right-0 z-30 bg-gsolid text-ink rounded-[12px] border border-gb shadow-xl py-1 px-1 flex items-center gap-1 text-xs origin-top-right"
             onClick={(e) => e.stopPropagation()}
           >
             {message.type === 'text' && (
@@ -250,7 +285,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   setIsEditing(true);
                   setMenuOpen(false);
                 }}
-                className="px-3 py-1.5 rounded-xl bg-field/70 shadow-neu-pill hover:bg-field flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed font-medium transition-all"
+                className="px-2.5 py-1 rounded-[8px] bg-field/60 hover:bg-field flex items-center gap-1 disabled:opacity-40 font-medium transition-all cursor-pointer"
               >
                 <span>{canEdit ? `Edit · ${secondsRemaining}s left` : 'Edit locked'}</span>
               </button>
@@ -259,7 +294,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             <button
               type="button"
               onClick={() => setShowUnsendConfirm(true)}
-              className="px-3 py-1.5 rounded-xl bg-field/70 shadow-neu-pill hover:bg-field text-bad flex items-center gap-1.5 font-medium transition-all"
+              className="px-2.5 py-1 rounded-[8px] bg-field/60 hover:bg-field text-bad flex items-center gap-1 font-medium transition-all cursor-pointer"
             >
               <span>Unsend</span>
             </button>
@@ -271,35 +306,35 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       <AnimatePresence>
         {showUnsendConfirm && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
             onClick={(e) => {
               e.stopPropagation();
               setShowUnsendConfirm(false);
             }}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.92, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              exit={{ scale: 0.92, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-surface text-ink p-6 rounded-3xl shadow-neu-float max-w-xs w-full border border-line/40"
+              className="bg-gsolid text-ink p-5 rounded-[20px] shadow-2xl max-w-xs w-full border border-gb"
             >
-              <h3 className="font-heading font-bold text-base mb-1.5 text-ink">Unsend message?</h3>
-              <p className="text-xs text-muted leading-relaxed mb-5">
-                This message will be removed from the chat for everyone. An audit log entry is preserved for admin review.
+              <h3 className="font-display font-bold text-[16px] mb-1 text-ink">Unsend message?</h3>
+              <p className="text-xs text-muted leading-relaxed mb-4">
+                This message will be removed from the chat. An audit log is kept for admin review.
               </p>
-              <div className="flex justify-end gap-2.5">
+              <div className="flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowUnsendConfirm(false)}
-                  className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-field shadow-neu-pill hover:opacity-80 text-muted"
+                  className="px-3 py-1.5 text-xs font-semibold rounded-[10px] bg-field border border-gb hover:opacity-80 text-muted cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirmUnsend}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-btn text-btn-ink shadow-neu-flat hover:opacity-90"
+                  className="px-3.5 py-1.5 text-xs font-semibold rounded-[10px] bg-bad text-white hover:opacity-90 cursor-pointer"
                 >
                   Unsend
                 </button>
@@ -308,6 +343,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           </div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 };
+

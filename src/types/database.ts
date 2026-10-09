@@ -34,10 +34,26 @@ export interface Message {
   created_at: string;
   edited_at: string | null;
   read_at: string | null;
+  is_one_time?: boolean;
+  viewed_by?: string[] | null;
   // Local state for optimistic updates / signed URL
   signed_url?: string;
   is_optimistic?: boolean;
 }
+
+// 10-day media auto-deletion threshold
+export const MEDIA_EXPIRY_DAYS = 10;
+export const isMediaExpired = (createdAt: string): boolean => {
+  try {
+    const createdTime = new Date(createdAt).getTime();
+    if (isNaN(createdTime)) return false;
+    const now = Date.now();
+    const ageMs = now - createdTime;
+    return ageMs > MEDIA_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+  } catch {
+    return false;
+  }
+};
 
 export interface MessageAudit {
   id: string;

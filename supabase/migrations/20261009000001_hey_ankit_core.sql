@@ -60,6 +60,8 @@ CREATE TABLE IF NOT EXISTS public.messages (
   type public.message_type NOT NULL DEFAULT 'text',
   body TEXT,
   image_path TEXT,
+  is_one_time BOOLEAN NOT NULL DEFAULT false,
+  viewed_by UUID[] NOT NULL DEFAULT '{}',
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
   edited_at TIMESTAMPTZ,
   read_at TIMESTAMPTZ,
@@ -82,10 +84,13 @@ CREATE TABLE IF NOT EXISTS public.message_audit (
   conversation_id UUID NOT NULL,
   body TEXT,
   image_path TEXT,
+  is_one_time BOOLEAN NOT NULL DEFAULT false,
+  viewed_by UUID[] NOT NULL DEFAULT '{}',
   original_created_at TIMESTAMPTZ NOT NULL,
   deleted_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
   deleted_by UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE
 );
+
 
 CREATE INDEX IF NOT EXISTS message_audit_conv_deleted_idx ON public.message_audit (conversation_id, deleted_at DESC);
 CREATE INDEX IF NOT EXISTS message_audit_deleted_at_idx ON public.message_audit (deleted_at DESC);
@@ -482,6 +487,48 @@ BEGIN
     AND read_at IS NULL;
 END;
 $$;
+
+-- 12b. RPC: Mark One-Time Media As Viewed
+CREATE OR REPLACE FUNCTION public.mark_one_time_viewed(
+  p_message_id UUID,
+  p_user_id UUID
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_message RECORD;
+BEGIN
+  SELECT * INTO v_message
+  FROM public.messages
+  WHERE id = p_message_id
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Message not found';
+  END IF;
+
+  -- Verify conversation membership
+  IF NOT public.is_conversation_member(v_message.conversation_id, auth.uid()) THEN
+    RAISE EXCEPTION 'Not authorized';
+  END IF;
+
+  -- Append user_id to viewed_by if not already present
+  UPDATE public.messages
+  SET viewed_by = array_append(COALESCE(viewed_by, '{}'), p_user_id)
+  WHERE id = p_message_id
+    AND NOT (p_user_id = ANY(COALESCE(viewed_by, '{}')));
+
+  RETURN jsonb_build_object(
+    'success', true,
+    'message_id', p_message_id,
+    'user_id', p_user_id
+  );
+END;
+$$;
+
 
 -- 13. RPC: Ensure / Get Conversation For Current User
 CREATE OR REPLACE FUNCTION public.get_or_create_my_conversation()
