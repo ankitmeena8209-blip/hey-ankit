@@ -19,7 +19,12 @@ export const getNotificationPermission = (): NotificationPermission => {
 };
 
 export const requestNotificationPermission = async (): Promise<NotificationPermission> => {
-  if (typeof window === 'undefined' || !('Notification' in window)) return 'denied';
+  if (typeof window === 'undefined') return 'denied';
+  if (!('Notification' in window)) {
+    alert('Notifications on iPhone require adding the app to your Home Screen: Tap the Share button in Safari -> "Add to Home Screen".');
+    return 'denied';
+  }
+
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted' && 'serviceWorker' in navigator) {
@@ -37,7 +42,19 @@ export const requestNotificationPermission = async (): Promise<NotificationPermi
  */
 export const sendHeyAnkitNotification = async (opts: NotificationOptions = {}) => {
   if (typeof window === 'undefined') return;
-  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+  // Haptic feedback on device if supported
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    try {
+      navigator.vibrate([100, 50, 100]);
+    } catch {
+      // ignore
+    }
+  }
+
+  if (!('Notification' in window) || Notification.permission !== 'granted') {
+    return;
+  }
 
   const sender = opts.senderName ? opts.senderName : 'Ankit';
   const title = `Hey Ankit • ${sender}`;
@@ -60,13 +77,17 @@ export const sendHeyAnkitNotification = async (opts: NotificationOptions = {}) =
   // 1. Mobile browsers (Chrome Android, Safari iOS PWA) require Service Worker showNotification
   if ('serviceWorker' in navigator) {
     try {
-      const registration = await navigator.serviceWorker.ready;
-      if (registration && typeof registration.showNotification === 'function') {
-        await registration.showNotification(title, notificationOptions as globalThis.NotificationOptions);
+      let reg = await navigator.serviceWorker.getRegistration();
+      if (!reg) {
+        reg = await navigator.serviceWorker.register('/sw.js');
+      }
+
+      if (reg && typeof reg.showNotification === 'function') {
+        await reg.showNotification(title, notificationOptions as globalThis.NotificationOptions);
         return;
       }
     } catch (swErr) {
-      console.warn('Service worker notification failed:', swErr);
+      console.warn('Service worker showNotification failed:', swErr);
     }
   }
 
