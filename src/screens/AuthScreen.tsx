@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowRight } from 'lucide-react';
+
 import { useAuth } from '../context/AuthContext';
 import { Tide } from '../components/Tide';
 import { ValidationPill } from '../components/ValidationPill';
@@ -23,6 +24,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [showHackerPrank, setShowHackerPrank] = useState(false);
 
   // Sync mode if initialMode prop changes
   useEffect(() => {
@@ -53,7 +55,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       } else {
         const res = await login(username, password);
         if (!res.success) {
-          setServerError(res.error ?? 'Invalid username or password.');
+          const cleanU = username.trim().toLowerCase();
+          // Hacker prank easter egg if someone tries to hack admin account
+          if (cleanU === 'being_frzi' || cleanU === 'ankit') {
+            setShowHackerPrank(true);
+          } else {
+            setServerError(res.error ?? 'Invalid username or password.');
+          }
         }
       }
     } catch {
@@ -65,6 +73,15 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
   const toggleMode = () => {
     setMode((prev) => (prev === 'signup' ? 'login' : 'signup'));
+    setServerError(null);
+  };
+
+  const handlePrankSwitchToSignup = () => {
+    setShowHackerPrank(false);
+    setUsername('');
+    setPassword('');
+    setConfirmPassword('');
+    setMode('signup');
     setServerError(null);
   };
 
@@ -253,6 +270,50 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
           </motion.button>
         </div>
       </div>
+
+      {/* Full-Screen Hacker Prank Pop-up Modal */}
+      <AnimatePresence>
+        {showHackerPrank && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/85 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.8, y: 20, rotate: -2 }}
+              animate={{ scale: 1, y: 0, rotate: 0 }}
+              exit={{ scale: 0.8, y: 20, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 450, damping: 25 }}
+              className="w-full max-w-sm bg-surface border-2 border-bad/80 rounded-3xl p-6 shadow-2xl flex flex-col items-center text-center gap-4"
+            >
+              <div className="w-16 h-16 rounded-full bg-bad/15 flex items-center justify-center text-3xl shadow-neu-raised border border-bad/30">
+                ☠️
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[11px] font-bold tracking-widest text-bad uppercase font-mono">
+                  [ ACCESS DENIED: HACK DETECTED ]
+                </span>
+                <h3 className="font-display text-[26px] sm:text-[28px] leading-tight text-ink mt-1 font-bold">
+                  haan bn liya hacker ab apna account bna le chu$iye
+                </h3>
+              </div>
+
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.94 }}
+                onClick={handlePrankSwitchToSignup}
+                className="w-full h-12 rounded-2xl bg-btn text-btn-ink font-display text-[16px] tracking-wide flex items-center justify-center gap-2 shadow-neu-float hover:opacity-90 transition-all cursor-pointer mt-2"
+              >
+                <span>Chalo, Apna Account Bnao</span>
+                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
