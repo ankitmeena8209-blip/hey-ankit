@@ -165,7 +165,7 @@ export const WaveComposer: React.FC<WaveComposerProps> = ({
         )}
 
         {/* Input control row */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           {/* Camera Button */}
           <input
             type="file"
@@ -176,11 +176,12 @@ export const WaveComposer: React.FC<WaveComposerProps> = ({
           />
           <motion.button
             type="button"
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.92 }}
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || isCompressing}
             aria-label="Attach photo"
-            className="w-11 h-11 rounded-full flex items-center justify-center text-ink hover:bg-field/70 transition-colors flex-shrink-0 disabled:opacity-40"
+            className="w-11 h-11 rounded-full bg-field shadow-neu-pill flex items-center justify-center text-ink hover:opacity-90 transition-all flex-shrink-0 disabled:opacity-40"
           >
             {isCompressing ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -189,8 +190,8 @@ export const WaveComposer: React.FC<WaveComposerProps> = ({
             )}
           </motion.button>
 
-          {/* Neumorphic Pill Input */}
-          <div className="flex-1 min-w-0 bg-field shadow-neu rounded-[22px] px-4 py-2 border-2 border-transparent focus-within:border-ink transition-all flex items-center">
+          {/* Neumorphic Pill Inset Input */}
+          <div className="flex-1 min-w-0 bg-field shadow-neu-inset rounded-[24px] px-4 py-2 border border-line/30 focus-within:border-ink/40 transition-all flex items-center">
             <textarea
               ref={textareaRef}
               value={text}
@@ -199,18 +200,19 @@ export const WaveComposer: React.FC<WaveComposerProps> = ({
               rows={1}
               placeholder="Type your message…"
               disabled={disabled}
-              className="w-full resize-none bg-transparent outline-none text-[15px] leading-relaxed text-ink placeholder:text-muted max-h-[100px] overflow-y-auto"
+              className="w-full resize-none bg-transparent outline-none text-[15px] leading-relaxed text-ink placeholder:text-muted/60 max-h-[100px] overflow-y-auto"
             />
           </div>
 
           {/* Black Circular Send Button with Up-Arrow Fly Motion */}
           <motion.button
             type="button"
-            whileTap={{ scale: 0.92 }}
+            whileHover={canSend ? { scale: 1.06, y: -1 } : {}}
+            whileTap={canSend ? { scale: 0.92 } : {}}
             onClick={() => handleSubmit()}
             disabled={!canSend}
             aria-label="Send message"
-            className="w-[46px] h-[46px] rounded-full bg-btn text-btn-ink flex items-center justify-center flex-shrink-0 disabled:opacity-35 transition-opacity shadow-sm"
+            className="w-[48px] h-[48px] rounded-full bg-btn text-btn-ink flex items-center justify-center flex-shrink-0 disabled:opacity-30 disabled:shadow-none transition-all shadow-neu-float"
           >
             {isSubmitting ? (
               <Loader2 className="w-5 h-5 animate-spin" />

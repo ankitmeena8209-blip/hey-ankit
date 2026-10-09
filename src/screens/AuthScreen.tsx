@@ -31,7 +31,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
   // Validation checks
   const usernameCheck = validateUsername(username);
   const isUsernameValid = usernameCheck.valid;
-  const isPasswordValid = password.length >= 8;
+  const isPasswordValid = password.length >= 6;
   const isConfirmValid = mode === 'login' || (isPasswordValid && confirmPassword === password && confirmPassword.length > 0);
 
   const isFormValid = isUsernameValid && isPasswordValid && isConfirmValid;
@@ -106,15 +106,15 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                     setUsername(val);
                     setServerError(null);
                   }}
-                  className="w-full h-11 rounded-xl bg-field shadow-neu px-3.5 text-[15px] text-ink outline-none border-2 border-transparent focus:border-ink focus:-translate-y-0.5 transition-all"
+                  className="w-full h-12 rounded-2xl bg-field shadow-neu-inset px-4 text-[15px] text-ink outline-none border border-line/30 focus:border-ink/40 transition-all placeholder:text-muted/60"
                   placeholder="e.g. being_frzi"
                 />
               </div>
               <ValidationPill isValid={isUsernameValid} label="Username" />
             </div>
             <small
-              className={`text-[11px] mt-1.5 transition-colors ${
-                username && !isUsernameValid ? 'text-bad font-medium' : 'text-muted'
+              className={`text-[11px] mt-1.5 transition-colors font-medium ${
+                username && !isUsernameValid ? 'text-bad' : 'text-muted'
               }`}
             >
               3–20 letters, numbers or _
@@ -137,13 +137,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                     setPassword(e.target.value);
                     setServerError(null);
                   }}
-                  className="w-full h-11 rounded-xl bg-field shadow-neu pl-3.5 pr-14 text-[15px] text-ink outline-none border-2 border-transparent focus:border-ink focus:-translate-y-0.5 transition-all"
+                  className="w-full h-12 rounded-2xl bg-field shadow-neu-inset pl-4 pr-14 text-[15px] text-ink outline-none border border-line/30 focus:border-ink/40 transition-all placeholder:text-muted/60"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-0 top-0 h-11 px-3 text-xs font-bold text-muted hover:text-ink transition-colors select-none"
+                  className="absolute right-0 top-0 h-12 px-3.5 text-xs font-bold text-muted hover:text-ink transition-colors select-none"
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
@@ -151,11 +151,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
               <ValidationPill isValid={isPasswordValid} label="Password" />
             </div>
             <small
-              className={`text-[11px] mt-1.5 transition-colors ${
-                password && !isPasswordValid ? 'text-bad font-medium' : 'text-muted'
+              className={`text-[11px] mt-1.5 transition-colors font-medium ${
+                password && !isPasswordValid ? 'text-bad' : 'text-muted'
               }`}
             >
-              At least 8 characters
+              At least 6 characters
             </small>
           </div>
 
@@ -166,7 +166,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.35, ease: [0.7, 0, 0.2, 1] }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
                 className="overflow-hidden flex flex-col"
               >
                 <label htmlFor="cp-input" className="text-[13px] font-semibold text-ink mb-1.5">
@@ -183,15 +183,15 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                         setConfirmPassword(e.target.value);
                         setServerError(null);
                       }}
-                      className="w-full h-11 rounded-xl bg-field shadow-neu px-3.5 text-[15px] text-ink outline-none border-2 border-transparent focus:border-ink focus:-translate-y-0.5 transition-all"
+                      className="w-full h-12 rounded-2xl bg-field shadow-neu-inset px-4 text-[15px] text-ink outline-none border border-line/30 focus:border-ink/40 transition-all placeholder:text-muted/60"
                       placeholder="••••••••"
                     />
                   </div>
                   <ValidationPill isValid={isConfirmValid && confirmPassword.length > 0} label="Confirm password" />
                 </div>
                 <small
-                  className={`text-[11px] mt-1.5 transition-colors ${
-                    confirmPassword && confirmPassword !== password ? 'text-bad font-medium' : 'text-muted'
+                  className={`text-[11px] mt-1.5 transition-colors font-medium ${
+                    confirmPassword && confirmPassword !== password ? 'text-bad' : 'text-muted'
                   }`}
                 >
                   Must match password
@@ -205,7 +205,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
             <motion.div
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-3 rounded-xl bg-field border border-bad/40 text-bad text-xs font-medium leading-relaxed"
+              className="p-3.5 rounded-2xl bg-field shadow-neu-inset border border-bad/40 text-bad text-xs font-medium leading-relaxed"
             >
               {serverError}
             </motion.div>
@@ -214,23 +214,26 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
         {/* Bottom Actions */}
         <div className="flex flex-col gap-3 pt-4">
-          <button
+          <motion.button
             type="button"
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
             onClick={toggleMode}
-            className="text-[13px] font-semibold text-ink underline underline-offset-4 min-h-[44px] flex items-center justify-center hover:opacity-80 transition-opacity"
+            className="text-[13px] font-semibold text-ink px-4 py-2.5 rounded-xl bg-field/60 shadow-neu-pill hover:bg-field min-h-[44px] flex items-center justify-center transition-all"
           >
             {mode === 'signup' ? 'Have an account? Log in' : 'New here? Create account'}
-          </button>
+          </motion.button>
 
           <motion.button
             type="button"
-            whileTap={{ scale: 0.92 }}
+            whileHover={isFormValid && !submitting ? { scale: 1.02, y: -1 } : {}}
+            whileTap={isFormValid && !submitting ? { scale: 0.96 } : {}}
             disabled={!isFormValid || submitting}
             onClick={handleSubmit}
-            className={`w-full h-12 rounded-xl font-display text-[20px] tracking-wider flex items-center justify-center gap-2.5 transition-all select-none shadow-sm ${
+            className={`w-full h-13 py-3 rounded-2xl font-display text-[20px] tracking-wider flex items-center justify-center gap-2.5 transition-all select-none ${
               isFormValid
-                ? 'bg-btn text-btn-ink cursor-pointer'
-                : 'bg-dis text-white/50 cursor-not-allowed'
+                ? 'bg-btn text-btn-ink cursor-pointer shadow-neu-float hover:opacity-95'
+                : 'bg-dis/50 text-white/40 cursor-not-allowed shadow-none'
             }`}
           >
             {submitting ? (

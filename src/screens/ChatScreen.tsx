@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
@@ -244,14 +245,12 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     };
   }, [conversation?.id, loadMessages, markRead, user?.id]);
 
+  const scrollRafRef = useRef<number | null>(null);
+
   // Scroll listener for dynamic tide height shrinkage
   const handleScroll = () => {
     const el = messagesContainerRef.current;
     if (!el) return;
-
-    // Scroll progress over 90px (0 -> 1)
-    const prog = Math.min(el.scrollTop / 90, 1);
-    setScrollProgress(prog);
 
     const threshold = 120;
     const isBottom = el.scrollHeight - el.scrollTop - el.clientHeight <= threshold;
@@ -260,6 +259,14 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     if (el.scrollTop <= 20 && hasMore && !loadingOlder) {
       loadOlderMessages();
     }
+
+    if (scrollRafRef.current) return;
+    scrollRafRef.current = requestAnimationFrame(() => {
+      scrollRafRef.current = null;
+      if (!el) return;
+      const prog = Math.min(el.scrollTop / 90, 1);
+      setScrollProgress(prog);
+    });
   };
 
   const handleTyping = () => {
@@ -336,8 +343,10 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       if (dateStr && dateStr !== lastDateStr) {
         lastDateStr = dateStr;
         elements.push(
-          <div key={`date-${msg.id}`} className="text-center font-semibold text-[13px] text-muted my-3 select-none">
-            {dateStr}
+          <div key={`date-${msg.id}`} className="flex justify-center my-3 select-none">
+            <span className="px-3.5 py-1 rounded-full bg-field/70 shadow-neu-pill text-[11px] font-semibold text-muted tracking-wide">
+              {dateStr}
+            </span>
           </div>
         );
       }
@@ -361,20 +370,21 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
       {/* Top Tide Header with Scroll Link */}
       <Tide screen="chat" scrollProgress={scrollProgress}>
-        <div className="absolute left-3.5 right-3.5 top-5 flex items-center gap-2.5 h-14">
+        <div className="absolute left-4 right-4 top-5 flex items-center gap-3 h-14">
           {isAdmin && onBack && (
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.9 }}
               onClick={onBack}
               aria-label="Back to inbox"
-              className="w-11 h-11 rounded-full flex items-center justify-center text-white hover:bg-white/15 transition-colors flex-shrink-0"
+              className="w-11 h-11 rounded-full flex items-center justify-center text-white hover:bg-white/15 transition-all flex-shrink-0"
             >
               <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
-            </button>
+            </motion.button>
           )}
 
           {/* White Avatar Circle with Anton Initial */}
-          <div className="w-11 h-11 rounded-full bg-white text-tide flex items-center justify-center font-display text-[20px] shadow-sm flex-shrink-0">
+          <div className="w-11 h-11 rounded-full bg-white text-tide flex items-center justify-center font-display text-[20px] shadow-neu-raised flex-shrink-0">
             {getInitials(partnerName)}
           </div>
 
@@ -386,19 +396,21 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
             >
               {partnerName}
             </b>
-            <small className="text-xs text-white/70 block truncate leading-tight">
+            <small className="text-xs text-white/70 block truncate leading-tight font-medium">
               {isTyping ? 'typing…' : 'online'}
             </small>
           </div>
 
           {/* Outlined Log out Pill */}
-          <button
+          <motion.button
             type="button"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.95 }}
             onClick={logout}
-            className="h-11 px-4 rounded-full border border-white/45 text-white text-xs font-semibold hover:bg-white/15 transition-colors flex-shrink-0 select-none flex items-center justify-center"
+            className="h-10 px-4 rounded-full border border-white/40 text-white text-xs font-semibold hover:bg-white/15 transition-all flex-shrink-0 select-none flex items-center justify-center"
           >
             Log out
-          </button>
+          </motion.button>
         </div>
       </Tide>
 
@@ -411,7 +423,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center text-muted gap-2">
             <Loader2 className="w-6 h-6 animate-spin text-ink" />
-            <span className="text-xs">Loading messages…</span>
+            <span className="text-xs font-medium">Loading messages…</span>
           </div>
         ) : (
           <>
@@ -422,15 +434,19 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
             )}
 
             {messages.length === 0 && (
-              <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-muted">
-                <div className="w-14 h-14 rounded-2xl bg-field flex items-center justify-center text-ink font-bold text-xl mb-3 shadow-neu">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex-1 flex flex-col items-center justify-center text-center p-6 text-muted my-auto"
+              >
+                <div className="w-16 h-16 rounded-3xl bg-field flex items-center justify-center text-ink font-bold text-2xl mb-3.5 shadow-neu-raised">
                   💬
                 </div>
-                <h3 className="font-display text-2xl text-ink mb-1">Hey there!</h3>
-                <p className="text-xs max-w-xs text-muted">
+                <h3 className="font-display text-2xl text-ink mb-1 tracking-wide">Hey there!</h3>
+                <p className="text-xs max-w-xs text-muted leading-relaxed">
                   Send your first message to begin this private 1:1 conversation.
                 </p>
-              </div>
+              </motion.div>
             )}
 
             {renderMessageList()}

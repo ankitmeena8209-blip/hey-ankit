@@ -89,11 +89,17 @@ export const AdminInbox: React.FC = () => {
     };
   }, [fetchConversations]);
 
+  const rafRef = useRef<number | null>(null);
+
   const handleScroll = () => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    const prog = Math.min(el.scrollTop / 90, 1);
-    setScrollProgress(prog);
+    if (rafRef.current) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      const el = scrollContainerRef.current;
+      if (!el) return;
+      const prog = Math.min(el.scrollTop / 90, 1);
+      setScrollProgress(prog);
+    });
   };
 
   const filteredConversations = useMemo(() => {
@@ -154,7 +160,7 @@ export const AdminInbox: React.FC = () => {
                 placeholder="Search username"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-10 rounded-xl bg-surface text-ink pl-10 pr-3.5 text-xs font-medium outline-none shadow-sm"
+                className="w-full h-10 rounded-xl bg-surface text-ink pl-10 pr-3.5 text-xs font-medium outline-none shadow-neu-inset border border-line/30"
               />
             </div>
           )}
@@ -172,14 +178,14 @@ export const AdminInbox: React.FC = () => {
             {loading ? (
               <div className="py-12 flex flex-col items-center justify-center text-muted gap-2">
                 <Loader2 className="w-6 h-6 animate-spin text-ink" />
-                <span className="text-xs">Loading conversations…</span>
+                <span className="text-xs font-medium">Loading conversations…</span>
               </div>
             ) : filteredConversations.length === 0 ? (
-              <div className="text-center py-12 text-muted text-xs">
+              <div className="text-center py-12 text-muted text-xs font-medium">
                 {searchQuery ? 'No friends match your search.' : 'No conversations yet.'}
               </div>
             ) : (
-              <div className="flex flex-col">
+              <div className="flex flex-col gap-2.5">
                 {filteredConversations.map((conv) => {
                   const friendUsername = conv.user?.username ?? 'Friend';
                   const lastMsg = conv.last_message;
@@ -192,14 +198,16 @@ export const AdminInbox: React.FC = () => {
                   const unread = conv.unread_count ?? 0;
 
                   return (
-                    <div
+                    <motion.div
                       key={conv.id}
+                      whileHover={{ scale: 1.01, y: -1 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => setSelectedConv({ id: conv.id, username: friendUsername })}
-                      className="flex items-center gap-3.5 py-3 px-2 min-h-[68px] border-b border-line cursor-pointer hover:bg-field/50 transition-colors"
+                      className="flex items-center gap-3.5 p-3 rounded-2xl bg-field/50 shadow-neu-flat hover:shadow-neu-raised cursor-pointer transition-all border border-line/30"
                     >
                       {/* Avatar with unread ring */}
                       <div
-                        className={`w-[46px] h-[46px] rounded-full bg-btn text-btn-ink font-display text-[20px] flex items-center justify-center flex-shrink-0 ${
+                        className={`w-[46px] h-[46px] rounded-full bg-btn text-btn-ink font-display text-[20px] flex items-center justify-center flex-shrink-0 shadow-neu-raised ${
                           unread > 0 ? 'ring-2 ring-surface ring-offset-2 ring-offset-ink' : ''
                         }`}
                       >
@@ -208,7 +216,7 @@ export const AdminInbox: React.FC = () => {
 
                       {/* Message info */}
                       <div className="flex-1 min-w-0 flex flex-col justify-center">
-                        <b className="font-bold text-[15px] text-ink truncate leading-tight">
+                        <b className="font-heading font-bold text-[15px] text-ink truncate leading-tight">
                           {friendUsername}
                         </b>
                         <p className="text-[13px] text-muted truncate mt-0.5 leading-tight">
@@ -217,15 +225,15 @@ export const AdminInbox: React.FC = () => {
                       </div>
 
                       {/* Time and Unread Badge */}
-                      <div className="flex flex-col items-end gap-1.5 flex-shrink-0 text-xs text-muted">
+                      <div className="flex flex-col items-end gap-1.5 flex-shrink-0 text-xs text-muted font-medium">
                         {timeStr && <span className="text-[11px]">{timeStr}</span>}
                         {unread > 0 && (
-                          <span className="bg-badge text-badge-ink rounded-[10px] min-w-[20px] px-1.5 py-0.5 text-[11px] font-bold text-center">
+                          <span className="bg-badge text-badge-ink rounded-full min-w-[20px] px-2 py-0.5 text-[11px] font-bold text-center shadow-neu-pill">
                             {unread}
                           </span>
                         )}
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>
@@ -238,11 +246,11 @@ export const AdminInbox: React.FC = () => {
       </div>
 
       {/* Floating Bottom Tab Bar with Spring Sliding Indicator */}
-      <div className="absolute bottom-3.5 left-4 right-4 z-30 h-[54px] rounded-[27px] bg-field shadow-neu flex items-center p-1 select-none">
+      <div className="absolute bottom-3.5 left-4 right-4 z-30 h-[56px] rounded-full bg-field shadow-neu-float border border-line/30 flex items-center p-1.5 select-none">
         <button
           type="button"
           onClick={() => setActiveTab('chats')}
-          className={`relative flex-1 h-full rounded-[23px] flex items-center justify-center gap-1.5 text-[13px] font-semibold transition-colors z-10 ${
+          className={`relative flex-1 h-full rounded-full flex items-center justify-center gap-1.5 text-[13px] font-semibold transition-colors z-10 ${
             activeTab === 'chats' ? 'text-btn-ink' : 'text-muted hover:text-ink'
           }`}
         >
@@ -251,7 +259,7 @@ export const AdminInbox: React.FC = () => {
           {activeTab === 'chats' && (
             <motion.div
               layoutId="admin-tab-pill"
-              className="absolute inset-0 bg-btn rounded-[23px] -z-10 shadow-sm"
+              className="absolute inset-0 bg-btn rounded-full -z-10 shadow-neu-flat"
               transition={{ type: 'spring', stiffness: 500, damping: 35 }}
             />
           )}
@@ -260,7 +268,7 @@ export const AdminInbox: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveTab('users')}
-          className={`relative flex-1 h-full rounded-[23px] flex items-center justify-center gap-1.5 text-[13px] font-semibold transition-colors z-10 ${
+          className={`relative flex-1 h-full rounded-full flex items-center justify-center gap-1.5 text-[13px] font-semibold transition-colors z-10 ${
             activeTab === 'users' ? 'text-btn-ink' : 'text-muted hover:text-ink'
           }`}
         >
@@ -269,7 +277,7 @@ export const AdminInbox: React.FC = () => {
           {activeTab === 'users' && (
             <motion.div
               layoutId="admin-tab-pill"
-              className="absolute inset-0 bg-btn rounded-[23px] -z-10 shadow-sm"
+              className="absolute inset-0 bg-btn rounded-full -z-10 shadow-neu-flat"
               transition={{ type: 'spring', stiffness: 500, damping: 35 }}
             />
           )}
@@ -278,16 +286,16 @@ export const AdminInbox: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveTab('unsent')}
-          className={`relative flex-1 h-full rounded-[23px] flex items-center justify-center gap-1.5 text-[13px] font-semibold transition-colors z-10 ${
+          className={`relative flex-1 h-full rounded-full flex items-center justify-center gap-1.5 text-[13px] font-semibold transition-colors z-10 ${
             activeTab === 'unsent' ? 'text-btn-ink' : 'text-muted hover:text-ink'
           }`}
         >
           <FileText className="w-4 h-4" />
-          <span>Unsent log</span>
+          <span>Unsent</span>
           {activeTab === 'unsent' && (
             <motion.div
               layoutId="admin-tab-pill"
-              className="absolute inset-0 bg-btn rounded-[23px] -z-10 shadow-sm"
+              className="absolute inset-0 bg-btn rounded-full -z-10 shadow-neu-flat"
               transition={{ type: 'spring', stiffness: 500, damping: 35 }}
             />
           )}

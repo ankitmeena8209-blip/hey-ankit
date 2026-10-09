@@ -27,10 +27,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const adminUsername = ((import.meta.env.VITE_ADMIN_USERNAME as string) || 'being_frzi').toLowerCase().trim();
 
   const fetchProfile = useCallback(async (userId: string, targetUser?: User | null) => {
-    const activeUser = targetUser ?? user;
     const rawUsername =
-      activeUser?.user_metadata?.username ||
-      (activeUser?.email ? activeUser.email.split('@')[0] : 'user');
+      targetUser?.user_metadata?.username ||
+      (targetUser?.email ? targetUser.email.split('@')[0] : 'user');
     const cleanUsername = rawUsername.toLowerCase().trim();
     const isAdminUser = cleanUsername === adminUsername || cleanUsername === 'ankit';
 
@@ -64,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updated_at: new Date().toISOString(),
       });
     }
-  }, [user, adminUsername]);
+  }, [adminUsername]);
 
   const refreshProfile = useCallback(async () => {
     if (user?.id) {
@@ -84,9 +83,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
       if (!isMounted) return;
       setSession(initialSession);
-      setUser(initialSession?.user ?? null);
-      if (initialSession?.user) {
-        fetchProfile(initialSession.user.id, initialSession.user).finally(() => {
+      const currentUser = initialSession?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        fetchProfile(currentUser.id, currentUser).finally(() => {
           if (isMounted) setLoading(false);
         });
       } else {
@@ -100,9 +100,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
       if (!isMounted) return;
       setSession(newSession);
-      setUser(newSession?.user ?? null);
-      if (newSession?.user) {
-        await fetchProfile(newSession.user.id, newSession.user);
+      const currentUser = newSession?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        await fetchProfile(currentUser.id, currentUser);
       } else {
         setProfile(null);
       }
@@ -135,7 +136,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
-        return { success: false, error: 'Invalid username or password.' };
+        const lower = error.message.toLowerCase();
+        if (lower.includes('invalid login credentials') || lower.includes('invalid credentials')) {
+          return {
+            success: false,
+            error: 'Incorrect username or password. If you have not created an account yet, tap "New here? Create account" below.',
+          };
+        }
+        if (lower.includes('email not confirmed')) {
+          return {
+            success: false,
+            error: 'Email confirmation required by Supabase. In Supabase Dashboard > Authentication > Providers > Email, turn "Confirm email" to OFF.',
+          };
+        }
+        return { success: false, error: error.message || 'Invalid username or password.' };
       }
 
       if (data.user) {
@@ -181,8 +195,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           lowerErr.includes('unique') ||
           lowerErr.includes('already exists')
         ) {
-          // If already registered, immediately attempt sign-in with the same credentials!
-          return login(cleanUsername, password);
+          // Attempt sign in with the password provided
+          const loginRes = await login(cleanUsername, password);
+          if (!loginRes.success) {
+            return {
+              success: false,
+              error: `Username "${cleanUsername}" is already registered. If this is your account, switch to "Log in" with your existing password.`,
+            };
+          }
+          return { success: true };
         }
         if (
           lowerErr.includes('rate limit') ||

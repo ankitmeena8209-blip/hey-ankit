@@ -61,14 +61,14 @@ export const AdminUnsentLog: React.FC = () => {
         <button
           type="button"
           onClick={fetchAuditLogs}
-          className="text-xs px-3 py-1.5 rounded-full bg-field shadow-neu text-ink font-semibold hover:opacity-80"
+          className="text-xs px-3.5 py-1.5 rounded-full bg-field shadow-neu-pill text-ink font-semibold hover:opacity-80 transition-all"
         >
           Refresh
         </button>
       </div>
 
       {/* Info notice */}
-      <div className="p-3 rounded-2xl bg-field border border-line text-xs text-ink/80 flex items-start gap-2 mb-3 shadow-neu">
+      <div className="p-3.5 rounded-2xl bg-field/60 border border-line/30 text-xs text-ink/85 flex items-start gap-2.5 mb-3.5 shadow-neu-inset">
         <Shield className="w-4 h-4 flex-shrink-0 text-ink mt-0.5" />
         <span className="leading-relaxed">
           When any user hits <strong>Unsend</strong>, the message is hard-deleted from live chat
@@ -77,7 +77,7 @@ export const AdminUnsentLog: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-3 rounded-xl mb-3 bg-field border border-bad/40 text-bad text-xs flex items-center gap-2">
+        <div className="p-3.5 rounded-2xl mb-3 bg-field border border-bad/40 text-bad text-xs flex items-center gap-2 shadow-neu-inset">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
           <span>{error}</span>
         </div>
@@ -86,10 +86,10 @@ export const AdminUnsentLog: React.FC = () => {
       {loading ? (
         <div className="flex-1 flex flex-col items-center justify-center py-12 text-muted">
           <Loader2 className="w-6 h-6 animate-spin text-ink mb-2" />
-          <span className="text-xs">Loading audit entries…</span>
+          <span className="text-xs font-medium">Loading audit entries…</span>
         </div>
       ) : logs.length === 0 ? (
-        <div className="text-center py-12 text-muted text-xs">No unsent messages logged.</div>
+        <div className="text-center py-12 text-muted text-xs font-medium">No unsent messages logged.</div>
       ) : (
         <div className="flex flex-col gap-2.5 pb-24">
           {logs.map((item) => {
@@ -99,22 +99,22 @@ export const AdminUnsentLog: React.FC = () => {
             return (
               <div
                 key={item.id}
-                className="bg-surface rounded-2xl p-3.5 border border-line shadow-neu flex flex-col gap-2"
+                className="bg-field/50 rounded-2xl p-4 border border-line/30 shadow-neu-flat flex flex-col gap-2.5"
               >
                 <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-btn text-btn-ink font-display text-xs flex items-center justify-center">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-full bg-btn text-btn-ink font-display text-xs flex items-center justify-center shadow-neu-raised">
                       {getInitials(senderName)}
                     </div>
                     <div>
-                      <span className="font-bold text-ink">{senderName}</span>
-                      <span className="text-muted ml-1.5 text-[11px]">
+                      <span className="font-heading font-bold text-ink">{senderName}</span>
+                      <span className="text-muted ml-1.5 text-[11px] font-medium">
                         sent at {formatMessageTime(item.original_created_at)}
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1 text-[11px] text-muted">
+                  <div className="flex items-center gap-1 text-[11px] text-muted font-medium">
                     <Clock className="w-3.5 h-3.5" />
                     <span>
                       by <strong>{deletedByName}</strong>
@@ -123,7 +123,7 @@ export const AdminUnsentLog: React.FC = () => {
                 </div>
 
                 {/* Original content */}
-                <div className="p-3 rounded-xl bg-field border border-line text-xs">
+                <div className="p-3.5 rounded-xl bg-surface/70 shadow-neu-inset border border-line/20 text-xs">
                   {item.body && (
                     <p className="font-sans text-ink leading-relaxed break-words whitespace-pre-wrap">
                       {item.body}
@@ -136,7 +136,7 @@ export const AdminUnsentLog: React.FC = () => {
                         src={item.signed_url}
                         alt="Unsent attachment"
                         onClick={() => setPreviewImage(item.signed_url ?? null)}
-                        className="max-h-40 max-w-xs object-cover rounded-lg cursor-zoom-in hover:opacity-90 transition-opacity border border-line"
+                        className="max-h-40 max-w-xs object-cover rounded-xl cursor-zoom-in hover:opacity-90 transition-opacity border border-line/40 shadow-sm"
                       />
                     </div>
                   )}

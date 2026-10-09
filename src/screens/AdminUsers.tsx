@@ -84,7 +84,7 @@ export const AdminUsers: React.FC = () => {
         <button
           type="button"
           onClick={fetchUsers}
-          className="text-xs px-3 py-1.5 rounded-full bg-field shadow-neu text-ink font-semibold hover:opacity-80"
+          className="text-xs px-3.5 py-1.5 rounded-full bg-field shadow-neu-pill text-ink font-semibold hover:opacity-80 transition-all"
         >
           Refresh
         </button>
@@ -92,7 +92,7 @@ export const AdminUsers: React.FC = () => {
 
       {feedback && (
         <div
-          className={`p-3 rounded-xl mb-3 text-xs flex items-center gap-2 border ${
+          className={`p-3.5 rounded-2xl mb-3 text-xs flex items-center gap-2 border shadow-neu-inset ${
             feedback.type === 'success'
               ? 'bg-field border-ok/40 text-ok'
               : 'bg-field border-bad/40 text-bad'
@@ -106,12 +106,12 @@ export const AdminUsers: React.FC = () => {
       {loading ? (
         <div className="flex-1 flex flex-col items-center justify-center py-12 text-muted">
           <Loader2 className="w-6 h-6 animate-spin text-ink mb-2" />
-          <span className="text-xs">Loading user accounts…</span>
+          <span className="text-xs font-medium">Loading user accounts…</span>
         </div>
       ) : users.length === 0 ? (
-        <div className="text-center py-12 text-muted text-xs">No registered users found.</div>
+        <div className="text-center py-12 text-muted text-xs font-medium">No registered users found.</div>
       ) : (
-        <div className="flex flex-col gap-2 pb-24">
+        <div className="flex flex-col gap-2.5 pb-24">
           {users.map((u) => {
             const isSelf = u.id === currentUser?.id;
             const isProcessing = actionLoading === u.id;
@@ -119,32 +119,32 @@ export const AdminUsers: React.FC = () => {
             return (
               <div
                 key={u.id}
-                className="bg-surface rounded-2xl p-3.5 border border-line shadow-neu flex flex-col gap-2.5"
+                className="bg-field/50 rounded-2xl p-4 border border-line/30 shadow-neu-flat flex flex-col gap-2.5"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-btn text-btn-ink font-display text-[18px] flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-btn text-btn-ink font-display text-[18px] flex items-center justify-center flex-shrink-0 shadow-neu-raised">
                       {getInitials(u.username)}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-ink">{u.username}</span>
+                        <span className="font-heading font-bold text-sm text-ink">{u.username}</span>
                         {u.role === 'admin' && (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-pill text-white">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-pill text-white shadow-neu-pill">
                             Admin
                           </span>
                         )}
                         <span
-                          className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
                             u.status === 'active'
-                              ? 'bg-field text-ok border border-ok/30'
-                              : 'bg-field text-bad border border-bad/30'
+                              ? 'bg-field shadow-neu-pill text-ok'
+                              : 'bg-field shadow-neu-pill text-bad'
                           }`}
                         >
                           {u.status}
                         </span>
                       </div>
-                      <span className="text-[11px] text-muted block mt-0.5">
+                      <span className="text-[11px] text-muted block mt-0.5 font-medium">
                         Joined {new Date(u.created_at).toLocaleDateString()}
                       </span>
                     </div>
@@ -158,7 +158,7 @@ export const AdminUsers: React.FC = () => {
                           type="button"
                           disabled={isProcessing}
                           onClick={() => setConfirmDialog({ action: 'disable', targetUser: u })}
-                          className="h-9 px-2.5 rounded-xl bg-field shadow-neu text-muted hover:text-ink text-xs font-semibold flex items-center gap-1 transition-all disabled:opacity-50"
+                          className="h-9 px-3 rounded-xl bg-field shadow-neu-pill text-muted hover:text-ink text-xs font-semibold flex items-center gap-1 transition-all disabled:opacity-50"
                           title="Disable user"
                         >
                           <UserX className="w-3.5 h-3.5" />
@@ -169,7 +169,7 @@ export const AdminUsers: React.FC = () => {
                           type="button"
                           disabled={isProcessing}
                           onClick={() => setConfirmDialog({ action: 'restore', targetUser: u })}
-                          className="h-9 px-2.5 rounded-xl bg-field shadow-neu text-ok hover:opacity-80 text-xs font-semibold flex items-center gap-1 transition-all disabled:opacity-50"
+                          className="h-9 px-3 rounded-xl bg-field shadow-neu-pill text-ok hover:opacity-80 text-xs font-semibold flex items-center gap-1 transition-all disabled:opacity-50"
                           title="Restore user"
                         >
                           <UserCheck className="w-3.5 h-3.5" />
@@ -181,7 +181,7 @@ export const AdminUsers: React.FC = () => {
                         type="button"
                         disabled={isProcessing}
                         onClick={() => setConfirmDialog({ action: 'delete', targetUser: u })}
-                        className="h-9 px-2.5 rounded-xl bg-field shadow-neu text-bad hover:opacity-80 text-xs font-semibold flex items-center gap-1 transition-all disabled:opacity-50"
+                        className="h-9 px-3 rounded-xl bg-field shadow-neu-pill text-bad hover:opacity-80 text-xs font-semibold flex items-center gap-1 transition-all disabled:opacity-50"
                         title="Delete user"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -199,27 +199,27 @@ export const AdminUsers: React.FC = () => {
       {/* Confirmation Dialog */}
       {confirmDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-surface text-ink p-5 rounded-2xl shadow-card max-w-xs w-full border border-line">
-            <h3 className="font-bold text-base mb-1.5 text-ink capitalize">
+          <div className="bg-surface text-ink p-6 rounded-3xl shadow-neu-float max-w-xs w-full border border-line/40">
+            <h3 className="font-heading font-bold text-base mb-1.5 text-ink capitalize">
               {confirmDialog.action} User: {confirmDialog.targetUser.username}
             </h3>
-            <p className="text-xs text-muted leading-relaxed mb-4">
+            <p className="text-xs text-muted leading-relaxed mb-5">
               {confirmDialog.action === 'delete'
                 ? 'Are you sure you want to permanently delete this user? Their profile, conversation, and files will be removed. Unsent audit records are retained.'
                 : `Are you sure you want to ${confirmDialog.action} this user?`}
             </p>
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() => setConfirmDialog(null)}
-                className="px-3 py-1.5 text-xs font-semibold rounded-lg hover:bg-field text-muted"
+                className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-field shadow-neu-pill hover:opacity-80 text-muted"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={() => executeAction(confirmDialog.action, confirmDialog.targetUser.id)}
-                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg text-btn-ink shadow-sm ${
+                className={`px-4 py-2 text-xs font-semibold rounded-xl text-btn-ink shadow-neu-flat ${
                   confirmDialog.action === 'delete' ? 'bg-bad text-white' : 'bg-btn text-btn-ink'
                 }`}
               >

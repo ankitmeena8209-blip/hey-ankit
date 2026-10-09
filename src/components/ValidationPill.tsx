@@ -9,7 +9,7 @@ interface ValidationPillProps {
 export const ValidationPill: React.FC<ValidationPillProps> = ({ isValid, label }) => {
   return (
     <div
-      className="w-[52px] h-[34px] rounded-[17px] bg-pill border border-line flex items-center justify-center flex-shrink-0 relative overflow-hidden select-none"
+      className="w-[52px] h-[36px] rounded-full bg-pill shadow-neu-pill border border-line/40 flex items-center justify-center flex-shrink-0 relative overflow-hidden select-none"
       role="status"
       aria-live="polite"
     >

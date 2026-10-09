@@ -16,26 +16,28 @@ export const ImageModal: React.FC<ImageModalProps> = ({ imageUrl, onClose }) => 
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
         >
-          <button
+          <motion.button
             type="button"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={onClose}
             aria-label="Close image preview"
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all z-10"
+            className="absolute top-5 right-5 p-2.5 rounded-full bg-surface/30 hover:bg-surface/50 text-white transition-all z-10 shadow-neu-pill"
           >
-            <X className="w-6 h-6 stroke-[2]" />
-          </button>
+            <X className="w-5 h-5 stroke-[2.5]" />
+          </motion.button>
 
           <motion.img
-            initial={{ scale: 0.85, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.85, opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+            initial={{ scale: 0.88, opacity: 0, y: 15 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.88, opacity: 0, y: 15 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 360 }}
             src={imageUrl}
             alt="Enlarged attachment"
             onClick={(e) => e.stopPropagation()}
-            className="max-h-[85vh] max-w-[95vw] object-contain rounded-2xl shadow-2xl"
+            className="max-h-[85vh] max-w-[92vw] object-contain rounded-3xl shadow-neu-float border border-white/10"
           />
         </motion.div>
       )}

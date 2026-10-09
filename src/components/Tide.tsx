@@ -30,15 +30,15 @@ export const Tide: React.FC<TideProps> = ({ screen, scrollProgress = 0, children
 
   return (
     <motion.div
-      initial={{ height: 0 }}
+      initial={false}
       animate={{ height: currentHeight }}
-      transition={{ duration: 1.05, ease: [0.7, 0, 0.2, 1] }}
-      className="absolute top-0 left-0 right-0 z-20 bg-tide overflow-hidden pointer-events-none"
+      transition={{ duration: 0.3, ease: [0.2, 0.9, 0.3, 1] }}
+      className="absolute top-0 left-0 right-0 z-20 bg-tide overflow-hidden pointer-events-none will-change-[height] transform-gpu"
     >
       {/* Welcome screen floating wave layers */}
       {screen === 'welcome' && (
         <svg
-          className="absolute -left-[30%] bottom-[30px] w-[160%] h-[170px] pointer-events-none transition-opacity duration-500"
+          className="absolute -left-[30%] bottom-[30px] w-[160%] h-[170px] pointer-events-none transition-opacity duration-300 transform-gpu"
           viewBox="0 0 640 150"
           preserveAspectRatio="none"
           aria-hidden="true"

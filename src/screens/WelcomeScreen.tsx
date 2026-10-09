@@ -37,30 +37,33 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGoSignup, onGoLo
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.55, ease: [0.2, 1.35, 0.4, 1] }}
-          className="flex items-center justify-between gap-4 pt-1"
+          className="flex items-center justify-between gap-4 pt-2"
         >
-          <button
+          <motion.button
             type="button"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
             onClick={onGoLogin}
-            className="text-[13px] font-semibold text-ink underline underline-offset-4 min-h-[44px] flex items-center hover:opacity-80 transition-opacity"
+            className="text-[13px] font-semibold text-ink px-4 py-2.5 rounded-xl bg-field/60 shadow-neu-pill hover:bg-field transition-all min-h-[44px] flex items-center"
           >
             I already have an account
-          </button>
+          </motion.button>
 
           <motion.button
+            whileHover={{ scale: 1.06, y: -2 }}
             whileTap={{ scale: 0.92 }}
             onClick={onGoSignup}
             aria-label="Get started"
-            className="w-[54px] h-[54px] rounded-full bg-btn text-btn-ink flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity flex-shrink-0"
+            className="w-[56px] h-[56px] rounded-full bg-btn text-btn-ink flex items-center justify-center shadow-neu-float hover:opacity-95 transition-all flex-shrink-0"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="ml-0.5">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="ml-0.5">
               <path d="M7 4l13 8-13 8z" />
             </svg>
           </motion.button>
         </motion.div>
 
         {/* Footer */}
-        <footer className="w-full text-center pt-6 text-[11px] font-medium text-muted/80">
+        <footer className="w-full text-center pt-6 text-[11px] font-medium text-muted/80 tracking-wider uppercase">
           © Being Frzi
         </footer>
       </div>

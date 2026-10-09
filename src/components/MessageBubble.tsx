@@ -144,17 +144,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             <textarea
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
-              className="w-full text-[15px] p-2 rounded-lg bg-surface text-ink placeholder:text-muted outline-none resize-none border border-line"
+              className="w-full text-[15px] p-2.5 rounded-xl bg-field shadow-neu-inset text-ink placeholder:text-muted outline-none resize-none border border-line/30"
               rows={2}
               autoFocus
             />
             <div className="flex items-center justify-between text-xs text-muted">
-              <span className="font-mono">{secondsRemaining}s left</span>
+              <span className="font-mono font-medium">{secondsRemaining}s left</span>
               <div className="flex gap-1.5">
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="px-2 py-1 rounded bg-surface border border-line text-ink flex items-center gap-1"
+                  className="px-2.5 py-1.5 rounded-lg bg-field shadow-neu-pill text-ink flex items-center gap-1 font-medium text-xs hover:opacity-80"
                 >
                   <X className="w-3.5 h-3.5" />
                   Cancel
@@ -163,7 +163,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   type="button"
                   onClick={handleSaveEdit}
                   disabled={secondsRemaining <= 0}
-                  className="px-2.5 py-1 rounded bg-btn text-btn-ink font-semibold flex items-center gap-1 disabled:opacity-50"
+                  className="px-3 py-1.5 rounded-lg bg-btn text-btn-ink font-semibold flex items-center gap-1 shadow-neu-flat disabled:opacity-50 text-xs"
                 >
                   <CheckIcon className="w-3.5 h-3.5" />
                   Save
@@ -175,7 +175,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           <>
             {/* Image attachment */}
             {message.type === 'image' && (
-              <div className="mb-1.5 overflow-hidden rounded-xl max-w-[260px] bg-field">
+              <div className="mb-1.5 overflow-hidden rounded-2xl max-w-[260px] bg-field shadow-neu-inset p-1">
                 {imageUrl ? (
                   <img
                     src={imageUrl}
@@ -239,7 +239,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.6 }}
             transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            className="absolute -top-12 right-0 z-30 bg-surface text-ink rounded-xl shadow-menu border border-line py-1 px-1 flex items-center gap-1 text-xs origin-top-right"
+            className="absolute -top-12 right-0 z-30 bg-surface text-ink rounded-2xl shadow-neu-float border border-line/40 py-1.5 px-1.5 flex items-center gap-1.5 text-xs origin-top-right"
             onClick={(e) => e.stopPropagation()}
           >
             {message.type === 'text' && (
@@ -250,7 +250,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   setIsEditing(true);
                   setMenuOpen(false);
                 }}
-                className="px-2.5 py-1.5 rounded-lg hover:bg-field flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed font-medium"
+                className="px-3 py-1.5 rounded-xl bg-field/70 shadow-neu-pill hover:bg-field flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed font-medium transition-all"
               >
                 <span>{canEdit ? `Edit · ${secondsRemaining}s left` : 'Edit locked'}</span>
               </button>
@@ -259,7 +259,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             <button
               type="button"
               onClick={() => setShowUnsendConfirm(true)}
-              className="px-2.5 py-1.5 rounded-lg hover:bg-field text-bad flex items-center gap-1.5 font-medium"
+              className="px-3 py-1.5 rounded-xl bg-field/70 shadow-neu-pill hover:bg-field text-bad flex items-center gap-1.5 font-medium transition-all"
             >
               <span>Unsend</span>
             </button>
@@ -282,24 +282,24 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-surface text-ink p-5 rounded-2xl shadow-card max-w-xs w-full border border-line"
+              className="bg-surface text-ink p-6 rounded-3xl shadow-neu-float max-w-xs w-full border border-line/40"
             >
-              <h3 className="font-bold text-base mb-1.5 text-ink">Unsend message?</h3>
-              <p className="text-xs text-muted leading-relaxed mb-4">
+              <h3 className="font-heading font-bold text-base mb-1.5 text-ink">Unsend message?</h3>
+              <p className="text-xs text-muted leading-relaxed mb-5">
                 This message will be removed from the chat for everyone. An audit log entry is preserved for admin review.
               </p>
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setShowUnsendConfirm(false)}
-                  className="px-3 py-1.5 text-xs font-semibold rounded-lg hover:bg-field text-muted"
+                  className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-field shadow-neu-pill hover:opacity-80 text-muted"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirmUnsend}
-                  className="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-btn text-btn-ink shadow-sm"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-btn text-btn-ink shadow-neu-flat hover:opacity-90"
                 >
                   Unsend
                 </button>
