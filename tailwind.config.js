@@ -8,37 +8,39 @@ export default {
   theme: {
     extend: {
       colors: {
-        page: '#4CBFB5',
-        surface: {
-          light: '#FFFFFF',
-          dark: '#10292B',
-          DEFAULT: '#FFFFFF',
+        page: 'var(--color-page)',
+        surface: 'var(--color-surface)',
+        ink: 'var(--color-ink)',
+        muted: 'var(--color-muted)',
+        line: 'var(--color-line)',
+        field: 'var(--color-field)',
+        tide: 'var(--color-tide)',
+        l1: 'var(--color-l1)',
+        l2: 'var(--color-l2)',
+        l3: 'var(--color-l3)',
+        btn: {
+          DEFAULT: 'var(--color-btn)',
+          ink: 'var(--color-btn-ink)',
         },
-        ink: {
-          light: '#0E3B3F',
-          dark: '#E2F3F1',
-          DEFAULT: '#0E3B3F',
-        },
-        muted: {
-          light: '#4F6B6E',
-          dark: '#7D9E9E',
-          DEFAULT: '#4F6B6E',
-        },
-        line: {
-          light: '#E3EEED',
-          dark: '#1B4144',
-          DEFAULT: '#E3EEED',
-        },
+        dis: 'var(--color-dis)',
+        pill: 'var(--color-pill)',
+        ok: 'var(--color-ok)',
+        bad: 'var(--color-bad)',
         bubble: {
-          received: '#C9ECE8',
-          sent: '#27706F',
+          sent: 'var(--color-bubble-sent)',
+          'sent-ink': 'var(--color-bubble-sent-ink)',
+          received: 'var(--color-bubble-received)',
         },
-        badge: '#E5484D',
-        g1: '#0A5F66',
-        g2: '#2A9D9A',
-        g3: '#8ED6CF',
+        badge: {
+          DEFAULT: 'var(--color-badge)',
+          ink: 'var(--color-badge-ink)',
+        },
+        g1: '#050505',
+        g2: '#151515',
+        g3: '#383838',
       },
       fontFamily: {
+        display: ['Anton', 'Impact', '"Arial Narrow"', 'sans-serif'],
         sans: [
           'Inter',
           '-apple-system',
@@ -49,6 +51,11 @@ export default {
           'Arial',
           'sans-serif',
         ],
+      },
+      boxShadow: {
+        neumorphic: 'var(--shadow-neumorphic)',
+        card: '0 22px 50px rgba(0,0,0,.35), 0 3px 8px rgba(0,0,0,.2)',
+        menu: '0 8px 22px rgba(0,0,0,.25)',
       },
       borderRadius: {
         'bubble': '16px',

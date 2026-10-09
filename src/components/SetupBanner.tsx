@@ -15,12 +15,12 @@ export const SetupBanner: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-200 text-xs flex items-start gap-2.5">
-          <ShieldAlert className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-600" />
+        <div className="p-4 rounded-2xl bg-field border border-line text-ink text-xs flex items-start gap-2.5">
+          <ShieldAlert className="w-4 h-4 flex-shrink-0 mt-0.5 text-bad" />
           <div>
             <span className="font-semibold block mb-0.5">Configuration Needed</span>
             Connect your Supabase project by adding your credentials to{' '}
-            <code className="font-mono bg-black/10 px-1 py-0.5 rounded">.env.local</code>.
+            <code className="font-mono bg-surface px-1 py-0.5 rounded border border-line">.env.local</code>.
           </div>
         </div>
 
