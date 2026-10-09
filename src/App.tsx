@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { MotionConfig } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { isSupabaseConfigured } from './lib/supabase';
 import { SetupBanner } from './components/SetupBanner';
+import { WelcomeScreen } from './screens/WelcomeScreen';
 import { AuthScreen } from './screens/AuthScreen';
 import { ChatScreen } from './screens/ChatScreen';
 import { AdminInbox } from './screens/AdminInbox';
@@ -9,6 +11,7 @@ import { Loader2 } from 'lucide-react';
 
 const MainRouter: React.FC = () => {
   const { user, profile, isAdmin, loading } = useAuth();
+  const [authMode, setAuthMode] = useState<'signup' | 'login' | null>(null);
 
   // Mobile visualViewport resize handling to keep composer above software keyboard
   useEffect(() => {
@@ -33,10 +36,10 @@ const MainRouter: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-dvh w-full bg-page flex flex-col items-center justify-center text-white gap-3 select-none">
-        <Loader2 className="w-9 h-9 animate-spin text-white drop-shadow" />
-        <span className="font-semibold text-sm tracking-wide text-white/90">
-          Loading Hey Ankit...
+      <div className="h-dvh w-full bg-surface flex flex-col items-center justify-center text-ink gap-3 select-none">
+        <Loader2 className="w-8 h-8 animate-spin text-ink" />
+        <span className="font-display text-xl tracking-wide text-ink">
+          Hey Ankit
         </span>
       </div>
     );
@@ -44,7 +47,20 @@ const MainRouter: React.FC = () => {
 
   // Not authenticated
   if (!user || !profile) {
-    return <AuthScreen />;
+    if (authMode === null) {
+      return (
+        <WelcomeScreen
+          onGoSignup={() => setAuthMode('signup')}
+          onGoLogin={() => setAuthMode('login')}
+        />
+      );
+    }
+    return (
+      <AuthScreen
+        initialMode={authMode}
+        onBackToWelcome={() => setAuthMode(null)}
+      />
+    );
   }
 
   // Admin lands on Admin Inbox (Chats, Users, Unsent Log)
@@ -62,8 +78,10 @@ export default function App() {
   }
 
   return (
-    <AuthProvider>
-      <MainRouter />
-    </AuthProvider>
+    <MotionConfig reducedMotion="user">
+      <AuthProvider>
+        <MainRouter />
+      </AuthProvider>
+    </MotionConfig>
   );
 }

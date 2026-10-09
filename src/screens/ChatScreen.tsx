@@ -3,12 +3,12 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import type { Message, Conversation } from '../types/database';
-import { WaveHeader } from '../components/WaveHeader';
+import { Tide } from '../components/Tide';
 import { WaveComposer } from '../components/WaveComposer';
 import { MessageBubble } from '../components/MessageBubble';
 import { ImageModal } from '../components/ImageModal';
-import { formatChatDate } from '../lib/utils';
-import { Loader2 } from 'lucide-react';
+import { formatChatDate, getInitials } from '../lib/utils';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 
 interface ChatScreenProps {
   conversationId?: string;
@@ -31,6 +31,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [enlargedImageUrl, setEnlargedImageUrl] = useState<string | null>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -45,7 +46,6 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       setLoading(true);
       try {
         if (propConversationId) {
-          // Admin viewing specific conversation
           const { data, error } = await supabase
             .from('conversations')
             .select('*, user:profiles!conversations_user_id_fkey(*)')
@@ -56,7 +56,6 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
             setConversation(data as Conversation);
           }
         } else {
-          // Regular user: get or create own 1:1 conversation with admin
           const { data, error } = await supabase.rpc('get_or_create_my_conversation');
           if (!error && data && isMounted) {
             setConversation(data as Conversation);
@@ -75,12 +74,11 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     };
   }, [propConversationId]);
 
-  // Determine chat partner name
   const partnerName = propPartnerUsername
     ? propPartnerUsername
     : isAdmin
     ? conversation?.user?.username ?? 'Friend'
-    : 'Ankit (@being_frzi)';
+    : 'Ankit';
 
   // 2. Mark messages read
   const markRead = useCallback(async (convId: string) => {
@@ -92,7 +90,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     }
   }, []);
 
-  // 3. Load initial latest 30 messages
+  // 3. Load latest 30 messages
   const loadMessages = useCallback(async (convId: string) => {
     try {
       const { data, error } = await supabase
@@ -105,11 +103,9 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       if (error) throw error;
 
       if (data) {
-        // Reverse array so messages render chronologically (oldest to newest)
         const sorted = (data as Message[]).reverse();
         setMessages(sorted);
         setHasMore(data.length === PAGE_SIZE);
-        // Scroll to bottom after loading initial
         setTimeout(() => {
           if (messagesContainerRef.current) {
             messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
@@ -121,7 +117,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     }
   }, []);
 
-  // 4. Load older messages (scroll up pagination without scroll yank)
+  // 4. Load older messages on scroll-up
   const loadOlderMessages = async () => {
     if (!conversation || loadingOlder || !hasMore || messages.length === 0) return;
 
@@ -149,7 +145,6 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
         setMessages((prev) => [...olderSorted, ...prev]);
         setHasMore(data.length === PAGE_SIZE);
 
-        // Preserve scroll position so user experience is smooth
         requestAnimationFrame(() => {
           if (container) {
             const newScrollHeight = container.scrollHeight;
@@ -166,7 +161,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     }
   };
 
-  // 5. Setup Realtime subscription and broadcast channel
+  // 5. Setup Realtime subscription
   useEffect(() => {
     if (!conversation?.id) return;
     const convId = conversation.id;
@@ -174,10 +169,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     loadMessages(convId);
     markRead(convId);
 
-    // Channel for postgres_changes + typing broadcast
     const channel = supabase
       .channel(`chat:${convId}`)
-      // Realtime DB changes on messages
       .on(
         'postgres_changes',
         {
@@ -190,14 +183,12 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
           if (payload.eventType === 'INSERT') {
             const newMsg = payload.new as Message;
             setMessages((prev) => {
-              // Deduplicate by message id
               if (prev.some((m) => m.id === newMsg.id)) {
                 return prev.map((m) => (m.id === newMsg.id ? newMsg : m));
               }
               return [...prev, newMsg];
             });
 
-            // If user is currently near bottom, scroll down
             if (isNearBottomRef.current) {
               setTimeout(() => {
                 if (messagesContainerRef.current) {
@@ -206,10 +197,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
               }, 60);
             }
 
-            // Mark read if incoming from other user
             if (newMsg.sender_id !== user?.id) {
               markRead(convId);
-              // Clear typing indicator
               setIsTyping(false);
             }
           } else if (payload.eventType === 'UPDATE') {
@@ -223,7 +212,6 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
           }
         }
       )
-      // Broadcast typing channel
       .on('broadcast', { event: 'typing' }, (payload) => {
         const { senderId } = payload.payload || {};
         if (senderId && senderId !== user?.id) {
@@ -231,7 +219,6 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
           if (typingTimeoutRef.current) {
             clearTimeout(typingTimeoutRef.current);
           }
-          // Auto clear typing state after 20s idle
           typingTimeoutRef.current = setTimeout(() => {
             setIsTyping(false);
           }, 20000);
@@ -257,10 +244,14 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     };
   }, [conversation?.id, loadMessages, markRead, user?.id]);
 
-  // Track if user is scrolled near bottom
+  // Scroll listener for dynamic tide height shrinkage
   const handleScroll = () => {
     const el = messagesContainerRef.current;
     if (!el) return;
+
+    // Scroll progress over 90px (0 -> 1)
+    const prog = Math.min(el.scrollTop / 90, 1);
+    setScrollProgress(prog);
 
     const threshold = 120;
     const isBottom = el.scrollHeight - el.scrollTop - el.clientHeight <= threshold;
@@ -271,7 +262,6 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     }
   };
 
-  // Broadcast typing
   const handleTyping = () => {
     if (!channelRef.current || !user?.id) return;
     channelRef.current.send({
@@ -281,7 +271,6 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     });
   };
 
-  // Send message
   const handleSendMessage = async (
     text: string,
     imagePayload?: { blob: Blob; ext: string }
@@ -302,10 +291,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
           upsert: false,
         });
 
-      if (uploadError) {
-        throw uploadError;
-      }
-
+      if (uploadError) throw uploadError;
       imagePath = path;
     }
 
@@ -317,12 +303,9 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       image_path: imagePath,
     });
 
-    if (insertError) {
-      throw insertError;
-    }
+    if (insertError) throw insertError;
   };
 
-  // Edit message
   const handleEditMessage = async (messageId: string, newBody: string) => {
     const { error } = await supabase.rpc('edit_message', {
       p_message_id: messageId,
@@ -334,7 +317,6 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     }
   };
 
-  // Unsend message
   const handleUnsendMessage = async (messageId: string) => {
     const { error } = await supabase.rpc('unsend_message', {
       p_message_id: messageId,
@@ -345,7 +327,6 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     }
   };
 
-  // Group messages by date
   const renderMessageList = () => {
     const elements: React.ReactNode[] = [];
     let lastDateStr = '';
@@ -355,10 +336,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       if (dateStr && dateStr !== lastDateStr) {
         lastDateStr = dateStr;
         elements.push(
-          <div key={`date-${msg.id}`} className="flex justify-center my-3 select-none">
-            <span className="px-3 py-1 rounded-full bg-black/10 dark:bg-white/10 text-ink/75 text-[11.5px] font-medium tracking-wide">
-              {dateStr}
-            </span>
+          <div key={`date-${msg.id}`} className="text-center font-semibold text-[13px] text-muted my-3 select-none">
+            {dateStr}
           </div>
         );
       }
@@ -379,44 +358,75 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
   };
 
   return (
-    <div className="h-dvh w-full flex flex-col bg-page select-none overflow-hidden">
-      {/* Wave Header */}
-      <WaveHeader
-        title={partnerName}
-        subtitle={isTyping ? undefined : 'online'}
-        isTyping={isTyping}
-        onBack={isAdmin ? onBack : undefined}
-        onLogout={logout}
-        avatarInitial={partnerName}
-      />
+    <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
+      {/* Top Tide Header with Scroll Link */}
+      <Tide screen="chat" scrollProgress={scrollProgress}>
+        <div className="absolute left-3.5 right-3.5 top-5 flex items-center gap-2.5 h-14">
+          {isAdmin && onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              aria-label="Back to inbox"
+              className="w-11 h-11 rounded-full flex items-center justify-center text-white hover:bg-white/15 transition-colors flex-shrink-0"
+            >
+              <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
+            </button>
+          )}
 
-      {/* Main chat messages area */}
+          {/* White Avatar Circle with Anton Initial */}
+          <div className="w-11 h-11 rounded-full bg-white text-tide flex items-center justify-center font-display text-[20px] shadow-sm flex-shrink-0">
+            {getInitials(partnerName)}
+          </div>
+
+          {/* Name & Status */}
+          <div className="flex-1 min-w-0 flex flex-col justify-center">
+            <b
+              className="font-display font-normal text-[26px] leading-tight text-white truncate origin-left transition-transform duration-100"
+              style={{ transform: `scale(${1 - 0.18 * scrollProgress})` }}
+            >
+              {partnerName}
+            </b>
+            <small className="text-xs text-white/70 block truncate leading-tight">
+              {isTyping ? 'typing…' : 'online'}
+            </small>
+          </div>
+
+          {/* Outlined Log out Pill */}
+          <button
+            type="button"
+            onClick={logout}
+            className="h-11 px-4 rounded-full border border-white/45 text-white text-xs font-semibold hover:bg-white/15 transition-colors flex-shrink-0 select-none flex items-center justify-center"
+          >
+            Log out
+          </button>
+        </div>
+      </Tide>
+
+      {/* Main chat body (scrolls under the tide) */}
       <div
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="flex-1 w-full max-w-4xl mx-auto px-3 sm:px-6 py-2 overflow-y-auto flex flex-col justify-start"
+        className="flex-1 w-full overflow-y-auto px-4 pt-[124px] pb-[96px] flex flex-col gap-2"
       >
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center text-muted gap-2">
-            <Loader2 className="w-6 h-6 animate-spin text-g1" />
-            <span className="text-xs">Loading conversation...</span>
+            <Loader2 className="w-6 h-6 animate-spin text-ink" />
+            <span className="text-xs">Loading messages…</span>
           </div>
         ) : (
           <>
-            {/* Loading older spinner */}
             {loadingOlder && (
               <div className="flex justify-center py-2 text-muted">
-                <Loader2 className="w-4 h-4 animate-spin text-g1" />
+                <Loader2 className="w-4 h-4 animate-spin text-ink" />
               </div>
             )}
 
-            {/* Empty state */}
             {messages.length === 0 && (
               <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-muted">
-                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-g1 font-bold text-xl mb-3 shadow-inner">
+                <div className="w-14 h-14 rounded-2xl bg-field flex items-center justify-center text-ink font-bold text-xl mb-3 shadow-neu">
                   💬
                 </div>
-                <h3 className="font-bold text-base text-ink mb-1">Say hello!</h3>
+                <h3 className="font-display text-2xl text-ink mb-1">Hey there!</h3>
                 <p className="text-xs max-w-xs text-muted">
                   Send your first message to begin this private 1:1 conversation.
                 </p>
@@ -424,6 +434,15 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
             )}
 
             {renderMessageList()}
+
+            {/* Realtime Typing Indicator */}
+            {isTyping && (
+              <div className="flex items-center gap-1 p-2 self-start" aria-label="typing">
+                <span className="w-1.5 h-1.5 rounded-full bg-ink animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-ink animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-ink animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            )}
           </>
         )}
       </div>
@@ -435,7 +454,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
         disabled={loading || !conversation}
       />
 
-      {/* Fullscreen image inspection modal */}
+      {/* Image inspection modal */}
       <ImageModal
         imageUrl={enlargedImageUrl}
         onClose={() => setEnlargedImageUrl(null)}

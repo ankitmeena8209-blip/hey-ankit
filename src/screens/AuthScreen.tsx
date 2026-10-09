@@ -1,195 +1,249 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, Loader2, Lock, User, AlertCircle } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { Tide } from '../components/Tide';
+import { ValidationPill } from '../components/ValidationPill';
+import { validateUsername } from '../lib/utils';
 
-export const AuthScreen: React.FC = () => {
+interface AuthScreenProps {
+  initialMode?: 'signup' | 'login';
+  onBackToWelcome?: () => void;
+}
+
+export const AuthScreen: React.FC<AuthScreenProps> = ({
+  initialMode = 'signup',
+}) => {
   const { login, register } = useAuth();
-  const [isRegister, setIsRegister] = useState(false);
+  const [mode, setMode] = useState<'signup' | 'login'>(initialMode);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  // Sync mode if initialMode prop changes
+  useEffect(() => {
+    setMode(initialMode);
+  }, [initialMode]);
+
+  // Validation checks
+  const usernameCheck = validateUsername(username);
+  const isUsernameValid = usernameCheck.valid;
+  const isPasswordValid = password.length >= 8;
+  const isConfirmValid = mode === 'login' || (isPasswordValid && confirmPassword === password && confirmPassword.length > 0);
+
+  const isFormValid = isUsernameValid && isPasswordValid && isConfirmValid;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage(null);
+    if (!isFormValid || submitting) return;
+
+    setServerError(null);
     setSubmitting(true);
 
     try {
-      const result = isRegister
-        ? await register(username, password)
-        : await login(username, password);
-
-      if (!result.success) {
-        setErrorMessage(result.error ?? 'Authentication failed.');
+      if (mode === 'signup') {
+        const res = await register(username, password);
+        if (!res.success) {
+          setServerError(res.error ?? 'Registration failed.');
+        }
+      } else {
+        const res = await login(username, password);
+        if (!res.success) {
+          setServerError(res.error ?? 'Invalid username or password.');
+        }
       }
     } catch {
-      setErrorMessage('Something went wrong. Please try again.');
+      setServerError('Unable to connect. Please try again.');
     } finally {
       setSubmitting(false);
     }
   };
 
+  const toggleMode = () => {
+    setMode((prev) => (prev === 'signup' ? 'login' : 'signup'));
+    setServerError(null);
+  };
+
   return (
-    <div className="min-h-screen w-full bg-page flex flex-col justify-between items-center p-4 sm:p-6 select-none overflow-y-auto">
-      <div className="w-full max-w-sm mx-auto my-auto py-8">
-        {/* Brand Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          className="bg-surface text-ink rounded-3xl p-7 sm:p-8 shadow-2xl border border-line flex flex-col gap-6"
-        >
-          {/* Header */}
-          <div className="text-center space-y-1.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-g1 to-g2 bg-clip-text text-transparent">
-              Hey Ankit
-            </h1>
-            <p className="text-sm text-muted font-medium">Private chat. Just us.</p>
-          </div>
+    <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
+      {/* Top Tide Header with Title */}
+      <Tide screen="auth">
+        <div className="absolute left-6 top-14">
+          <motion.h2
+            key={mode}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="font-display text-[46px] leading-none text-white tracking-wide"
+          >
+            {mode === 'signup' ? 'Sign up' : 'Log in'}
+          </motion.h2>
+        </div>
+      </Tide>
 
-          {/* Error Banner */}
-          <AnimatePresence>
-            {errorMessage && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-700 dark:text-rose-300 text-xs flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-500" />
-                  <span className="leading-snug">{errorMessage}</span>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {/* Username */}
-            <div className="space-y-1.5 text-left">
-              <label
-                htmlFor="username"
-                className="block text-xs font-semibold uppercase tracking-wider text-muted"
-              >
-                Username
-              </label>
-              <div className="relative flex items-center">
-                <User className="absolute left-3.5 w-4 h-4 text-muted/60 pointer-events-none" />
+      {/* Main Form Area */}
+      <div className="relative z-10 flex-1 px-6 pt-[180px] pb-6 flex flex-col justify-between overflow-y-auto">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+          {/* Username Field */}
+          <div className="flex flex-col">
+            <label htmlFor="u-input" className="text-[13px] font-semibold text-ink mb-1.5">
+              Username
+            </label>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
                 <input
-                  id="username"
+                  id="u-input"
                   type="text"
-                  autoCapitalize="none"
                   autoComplete="username"
+                  autoCapitalize="none"
                   spellCheck="false"
+                  maxLength={20}
                   value={username}
                   onChange={(e) => {
-                    let val = e.target.value.toLowerCase().trim();
-                    if (val.includes('@')) {
-                      val = val.split('@')[0];
-                    }
+                    let val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
                     setUsername(val);
-                    setErrorMessage(null);
+                    setServerError(null);
                   }}
-                  placeholder="e.g. ankit"
-                  required
-                  className="w-full bg-slate-50 dark:bg-teal-950/40 text-ink rounded-xl pl-10 pr-3.5 py-3 text-sm border border-line outline-none focus:ring-2 focus:ring-g2 focus:border-transparent transition-all placeholder:text-muted/50"
+                  className="w-full h-11 rounded-xl bg-field shadow-neu px-3.5 text-[15px] text-ink outline-none border-2 border-transparent focus:border-ink focus:-translate-y-0.5 transition-all"
+                  placeholder="e.g. being_frzi"
                 />
               </div>
-              <span className="text-[11px] text-muted block pl-1">
-                {isRegister
-                  ? '3–20 lowercase letters or numbers. No @ or domain needed.'
-                  : 'Enter your unique username'}
-              </span>
+              <ValidationPill isValid={isUsernameValid} label="Username" />
             </div>
+            <small
+              className={`text-[11px] mt-1.5 transition-colors ${
+                username && !isUsernameValid ? 'text-bad font-medium' : 'text-muted'
+              }`}
+            >
+              3–20 letters, numbers or _
+            </small>
+          </div>
 
-            {/* Password */}
-            <div className="space-y-1.5 text-left">
-              <label
-                htmlFor="password"
-                className="block text-xs font-semibold uppercase tracking-wider text-muted"
-              >
-                Password
-              </label>
-              <div className="relative flex items-center">
-                <Lock className="absolute left-3.5 w-4 h-4 text-muted/60 pointer-events-none" />
+          {/* Password Field */}
+          <div className="flex flex-col">
+            <label htmlFor="pw-input" className="text-[13px] font-semibold text-ink mb-1.5">
+              Password
+            </label>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
                 <input
-                  id="password"
+                  id="pw-input"
                   type={showPassword ? 'text' : 'password'}
-                  autoComplete={isRegister ? 'new-password' : 'current-password'}
+                  autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
-                    setErrorMessage(null);
+                    setServerError(null);
                   }}
+                  className="w-full h-11 rounded-xl bg-field shadow-neu pl-3.5 pr-14 text-[15px] text-ink outline-none border-2 border-transparent focus:border-ink focus:-translate-y-0.5 transition-all"
                   placeholder="••••••••"
-                  required
-                  minLength={6}
-                  className="w-full bg-slate-50 dark:bg-teal-950/40 text-ink rounded-xl pl-10 pr-11 py-3 text-sm border border-line outline-none focus:ring-2 focus:ring-g2 focus:border-transparent transition-all placeholder:text-muted/50"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="touch-target absolute right-1 p-2 text-muted hover:text-ink flex items-center justify-center transition-colors"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  className="absolute right-0 top-0 h-11 px-3 text-xs font-bold text-muted hover:text-ink transition-colors select-none"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
+                  {showPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
-              {isRegister && (
-                <span className="text-[11px] text-muted block pl-1">
-                  Minimum 8 characters
-                </span>
-              )}
+              <ValidationPill isValid={isPasswordValid} label="Password" />
             </div>
-
-            {/* Submit Button */}
-            <motion.button
-              type="submit"
-              whileTap={{ scale: 0.92 }}
-              disabled={submitting}
-              className="mt-2 w-full touch-target py-3 px-4 rounded-xl bg-gradient-to-r from-g1 to-g2 hover:opacity-95 active:opacity-90 text-white font-semibold text-sm shadow-md flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+            <small
+              className={`text-[11px] mt-1.5 transition-colors ${
+                password && !isPasswordValid ? 'text-bad font-medium' : 'text-muted'
+              }`}
             >
-              {submitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>{isRegister ? 'Creating account...' : 'Signing in...'}</span>
-                </>
-              ) : (
-                <span>{isRegister ? 'Create Account' : 'Log In'}</span>
-              )}
-            </motion.button>
-          </form>
-
-          {/* Toggle between Login and Register */}
-          <div className="pt-2 text-center text-xs">
-            <button
-              type="button"
-              onClick={() => {
-                setIsRegister((prev) => !prev);
-                setErrorMessage(null);
-              }}
-              className="text-g1 hover:text-g2 dark:text-cyan-400 font-semibold underline underline-offset-4 transition-colors"
-            >
-              {isRegister
-                ? 'Already have an account? Log in'
-                : 'New here? Create account'}
-            </button>
+              At least 8 characters
+            </small>
           </div>
-        </motion.div>
-      </div>
 
-      {/* Footer */}
-      <footer className="w-full text-center py-4 text-xs font-medium text-white/80 select-none">
-        © Being Frzi
-      </footer>
+          {/* Confirm Password Field (Collapses smoothly in login mode) */}
+          <AnimatePresence initial={false}>
+            {mode === 'signup' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.35, ease: [0.7, 0, 0.2, 1] }}
+                className="overflow-hidden flex flex-col"
+              >
+                <label htmlFor="cp-input" className="text-[13px] font-semibold text-ink mb-1.5">
+                  Confirm password
+                </label>
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      id="cp-input"
+                      type={showPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
+                      value={confirmPassword}
+                      onChange={(e) => {
+                        setConfirmPassword(e.target.value);
+                        setServerError(null);
+                      }}
+                      className="w-full h-11 rounded-xl bg-field shadow-neu px-3.5 text-[15px] text-ink outline-none border-2 border-transparent focus:border-ink focus:-translate-y-0.5 transition-all"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <ValidationPill isValid={isConfirmValid && confirmPassword.length > 0} label="Confirm password" />
+                </div>
+                <small
+                  className={`text-[11px] mt-1.5 transition-colors ${
+                    confirmPassword && confirmPassword !== password ? 'text-bad font-medium' : 'text-muted'
+                  }`}
+                >
+                  Must match password
+                </small>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Server Error Alert */}
+          {serverError && (
+            <motion.div
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-3 rounded-xl bg-field border border-bad/40 text-bad text-xs font-medium leading-relaxed"
+            >
+              {serverError}
+            </motion.div>
+          )}
+        </form>
+
+        {/* Bottom Actions */}
+        <div className="flex flex-col gap-3 pt-4">
+          <button
+            type="button"
+            onClick={toggleMode}
+            className="text-[13px] font-semibold text-ink underline underline-offset-4 min-h-[44px] flex items-center justify-center hover:opacity-80 transition-opacity"
+          >
+            {mode === 'signup' ? 'Have an account? Log in' : 'New here? Create account'}
+          </button>
+
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.92 }}
+            disabled={!isFormValid || submitting}
+            onClick={handleSubmit}
+            className={`w-full h-12 rounded-xl font-display text-[20px] tracking-wider flex items-center justify-center gap-2.5 transition-all select-none shadow-sm ${
+              isFormValid
+                ? 'bg-btn text-btn-ink cursor-pointer'
+                : 'bg-dis text-white/50 cursor-not-allowed'
+            }`}
+          >
+            {submitting ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Checking…</span>
+              </>
+            ) : (
+              <span>{mode === 'signup' ? 'Confirm' : 'Log in'}</span>
+            )}
+          </motion.button>
+        </div>
+      </div>
     </div>
   );
 };

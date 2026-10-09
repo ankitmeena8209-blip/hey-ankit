@@ -26,7 +26,6 @@ export const AdminUnsentLog: React.FC = () => {
 
       if (fetchErr) throw fetchErr;
 
-      // Resolve signed images for audit records
       const auditRecords = (data as MessageAudit[]) || [];
       const withImages = await Promise.all(
         auditRecords.map(async (record) => {
@@ -52,35 +51,33 @@ export const AdminUnsentLog: React.FC = () => {
   }, [fetchAuditLogs]);
 
   return (
-    <div className="w-full flex-1 flex flex-col overflow-y-auto px-4 sm:px-6 py-4 max-w-4xl mx-auto">
+    <div className="w-full flex-1 flex flex-col overflow-y-auto px-4 py-3 max-w-md mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <div>
-          <h2 className="text-xl font-bold text-ink">Unsent Audit Log</h2>
-          <p className="text-xs text-muted">
-            Permanent records of messages unsent by users. Retained for 30 days.
-          </p>
+          <h2 className="text-lg font-bold text-ink">Unsent Audit Log</h2>
+          <p className="text-xs text-muted">Retained for 30 days</p>
         </div>
         <button
           type="button"
           onClick={fetchAuditLogs}
-          className="text-xs px-3 py-1.5 rounded-lg bg-surface border border-line hover:bg-black/5 text-ink font-semibold"
+          className="text-xs px-3 py-1.5 rounded-full bg-field shadow-neu text-ink font-semibold hover:opacity-80"
         >
           Refresh
         </button>
       </div>
 
       {/* Info notice */}
-      <div className="p-3.5 rounded-2xl bg-g1/10 border border-g1/20 text-xs text-ink/90 flex items-start gap-2.5 mb-4">
-        <Shield className="w-4 h-4 flex-shrink-0 text-g1 mt-0.5" />
+      <div className="p-3 rounded-2xl bg-field border border-line text-xs text-ink/80 flex items-start gap-2 mb-3 shadow-neu">
+        <Shield className="w-4 h-4 flex-shrink-0 text-ink mt-0.5" />
         <span className="leading-relaxed">
           When any user hits <strong>Unsend</strong>, the message is hard-deleted from live chat
-          and immediately logged here. Only admin has access to this log.
+          and preserved here for admin review.
         </span>
       </div>
 
       {error && (
-        <div className="p-3 rounded-xl mb-4 bg-rose-500/10 border border-rose-500/25 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
+        <div className="p-3 rounded-xl mb-3 bg-field border border-bad/40 text-bad text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
           <span>{error}</span>
         </div>
@@ -88,13 +85,13 @@ export const AdminUnsentLog: React.FC = () => {
 
       {loading ? (
         <div className="flex-1 flex flex-col items-center justify-center py-12 text-muted">
-          <Loader2 className="w-6 h-6 animate-spin text-g1 mb-2" />
-          <span className="text-xs">Loading audit entries...</span>
+          <Loader2 className="w-6 h-6 animate-spin text-ink mb-2" />
+          <span className="text-xs">Loading audit entries…</span>
         </div>
       ) : logs.length === 0 ? (
         <div className="text-center py-12 text-muted text-xs">No unsent messages logged.</div>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2.5 pb-24">
           {logs.map((item) => {
             const senderName = item.sender?.username ?? 'Unknown';
             const deletedByName = item.deleted_by_user?.username ?? 'Unknown';
@@ -102,11 +99,11 @@ export const AdminUnsentLog: React.FC = () => {
             return (
               <div
                 key={item.id}
-                className="bg-surface rounded-2xl p-4 border border-line shadow-sm flex flex-col gap-2.5"
+                className="bg-surface rounded-2xl p-3.5 border border-line shadow-neu flex flex-col gap-2"
               >
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-g2/20 flex items-center justify-center text-g1 font-bold text-xs">
+                    <div className="w-7 h-7 rounded-full bg-btn text-btn-ink font-display text-xs flex items-center justify-center">
                       {getInitials(senderName)}
                     </div>
                     <div>
@@ -120,14 +117,13 @@ export const AdminUnsentLog: React.FC = () => {
                   <div className="flex items-center gap-1 text-[11px] text-muted">
                     <Clock className="w-3.5 h-3.5" />
                     <span>
-                      Unsent on {new Date(item.deleted_at).toLocaleDateString()} by{' '}
-                      <strong>{deletedByName}</strong>
+                      by <strong>{deletedByName}</strong>
                     </span>
                   </div>
                 </div>
 
                 {/* Original content */}
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-teal-950/40 border border-line/60 text-xs">
+                <div className="p-3 rounded-xl bg-field border border-line text-xs">
                   {item.body && (
                     <p className="font-sans text-ink leading-relaxed break-words whitespace-pre-wrap">
                       {item.body}
@@ -140,7 +136,7 @@ export const AdminUnsentLog: React.FC = () => {
                         src={item.signed_url}
                         alt="Unsent attachment"
                         onClick={() => setPreviewImage(item.signed_url ?? null)}
-                        className="max-h-48 max-w-xs object-cover rounded-lg cursor-zoom-in hover:opacity-90 transition-opacity border border-line"
+                        className="max-h-40 max-w-xs object-cover rounded-lg cursor-zoom-in hover:opacity-90 transition-opacity border border-line"
                       />
                     </div>
                   )}
