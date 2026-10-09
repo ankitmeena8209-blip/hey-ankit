@@ -22,14 +22,21 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGoSignup, onGoLo
 
       {/* Main bottom section below wave */}
       <div className="relative z-10 mt-auto px-6 pb-7 pt-3 flex flex-col gap-2.5">
-        <motion.h1
+        <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.25, ease: [0.2, 1.35, 0.4, 1] }}
-          className="font-display text-[42px] leading-tight text-ink tracking-tight"
+          className="flex items-center gap-3"
         >
-          Hey Ankit
-        </motion.h1>
+          <img
+            src="/logo-mark.png"
+            alt="Hey Ankit Logo"
+            className="w-12 h-12 object-contain"
+          />
+          <h1 className="font-display text-[42px] leading-tight text-ink tracking-tight">
+            Hey Ankit
+          </h1>
+        </motion.div>
 
         <motion.p
           initial={{ opacity: 0, y: 12 }}

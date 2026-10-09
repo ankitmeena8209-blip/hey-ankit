@@ -1,14 +1,16 @@
 import React from 'react';
-import { Database, ShieldAlert } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
 
 export const SetupBanner: React.FC = () => {
   return (
     <div className="min-h-screen bg-page flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-surface text-ink rounded-3xl p-6 sm:p-8 shadow-2xl border border-line flex flex-col gap-5">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-2xl bg-g1/10 text-g1">
-            <Database className="w-8 h-8" />
-          </div>
+          <img
+            src="/logo-mark.png"
+            alt="Hey Ankit Logo"
+            className="w-10 h-10 object-contain"
+          />
           <div>
             <h1 className="text-xl font-bold text-ink">Hey Ankit</h1>
             <p className="text-xs text-muted">Supabase Setup Required</p>

@@ -94,7 +94,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
       {/* Top Tide Header with Title */}
       <Tide screen="auth">
-        <div className="absolute left-6 top-11">
+        <div className="absolute left-6 top-10 flex items-center gap-2.5">
+          <img
+            src="/logo-mark.png"
+            alt="Hey Ankit Logo"
+            className="w-9 h-9 object-contain filter brightness-110"
+          />
           <motion.h2
             key={mode}
             initial={{ opacity: 0, y: -8 }}

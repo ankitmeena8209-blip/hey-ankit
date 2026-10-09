@@ -9,13 +9,19 @@ import { AdminUsers } from './AdminUsers';
 import { AdminUnsentLog } from './AdminUnsentLog';
 import { ChatScreen } from './ChatScreen';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { Search, MessageSquare, Users, FileText, Loader2 } from 'lucide-react';
+import { Search, MessageSquare, Users, FileText, Loader2, Bell, BellOff } from 'lucide-react';
 import { getInitials, formatShortTime } from '../lib/utils';
+import {
+  sendHeyAnkitNotification,
+  requestNotificationPermission,
+  isNotificationSupported,
+  getNotificationPermission,
+} from '../lib/notifications';
 
 type AdminTab = 'chats' | 'users' | 'unsent';
 
 export const AdminInbox: React.FC = () => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const { isUserOnline } = usePresence();
   const [activeTab, setActiveTab] = useState<AdminTab>('chats');
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -23,6 +29,25 @@ export const AdminInbox: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedConv, setSelectedConv] = useState<{ id: string; username: string } | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [notifPerm, setNotifPerm] = useState<NotificationPermission>(getNotificationPermission());
+
+  const handleToggleNotification = async () => {
+    if (notifPerm === 'granted') {
+      sendHeyAnkitNotification({
+        senderName: 'Hey Ankit',
+        preview: 'Branded notifications are active!',
+      });
+      return;
+    }
+    const perm = await requestNotificationPermission();
+    setNotifPerm(perm);
+    if (perm === 'granted') {
+      sendHeyAnkitNotification({
+        senderName: 'Hey Ankit',
+        preview: 'Branded notifications enabled!',
+      });
+    }
+  };
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -81,8 +106,24 @@ export const AdminInbox: React.FC = () => {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'messages' },
-        () => {
+        (payload) => {
           fetchConversations();
+          if (payload.eventType === 'INSERT') {
+            const msg = payload.new as { sender_id?: string; type?: string; body?: string };
+            if (document.hidden && msg && msg.sender_id !== user?.id) {
+              sendHeyAnkitNotification({
+                senderName: 'Friend',
+                preview:
+                  msg.type === 'image'
+                    ? '📷 Sent a photo'
+                    : msg.body
+                    ? msg.body.length > 50
+                      ? msg.body.slice(0, 50) + '...'
+                      : msg.body
+                    : 'Sent a new message',
+              });
+            }
+          }
         }
       )
       .subscribe();
@@ -90,7 +131,7 @@ export const AdminInbox: React.FC = () => {
     return () => {
       channel.unsubscribe();
     };
-  }, [fetchConversations]);
+  }, [fetchConversations, user?.id]);
 
   const rafRef = useRef<number | null>(null);
 
@@ -133,13 +174,35 @@ export const AdminInbox: React.FC = () => {
         <div className="absolute left-4 right-4 top-3 flex flex-col">
           {/* Top row: Title, ThemeToggle and Log out */}
           <div className="flex items-center justify-between h-11">
-            <h2
-              className="font-display font-normal text-[28px] leading-none text-white tracking-wide origin-left transition-transform duration-100"
-              style={{ transform: `scale(${1 - 0.15 * scrollProgress})` }}
-            >
-              Friends
-            </h2>
+            <div className="flex items-center gap-2.5">
+              <img
+                src="/logo-mark.png"
+                alt="Hey Ankit Logo"
+                className="w-8 h-8 object-contain filter brightness-110"
+              />
+              <h2
+                className="font-display font-normal text-[28px] leading-none text-white tracking-wide origin-left transition-transform duration-100"
+                style={{ transform: `scale(${1 - 0.15 * scrollProgress})` }}
+              >
+                Friends
+              </h2>
+            </div>
             <div className="flex items-center gap-2">
+              {isNotificationSupported() && (
+                <button
+                  type="button"
+                  onClick={handleToggleNotification}
+                  title={notifPerm === 'granted' ? 'Notifications Enabled' : 'Enable Notifications'}
+                  aria-label={notifPerm === 'granted' ? 'Notifications Enabled' : 'Enable Notifications'}
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-white hover:bg-white/15 transition-all flex-shrink-0 cursor-pointer"
+                >
+                  {notifPerm === 'granted' ? (
+                    <Bell className="w-4 h-4 text-emerald-300 stroke-[2.2]" />
+                  ) : (
+                    <BellOff className="w-4 h-4 text-white/70 stroke-[2]" />
+                  )}
+                </button>
+              )}
               <ThemeToggle />
               <button
                 type="button"

@@ -11,7 +11,13 @@ import { MessageBubble } from '../components/MessageBubble';
 import { ImageModal } from '../components/ImageModal';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { formatChatDate, getInitials } from '../lib/utils';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Bell, BellOff } from 'lucide-react';
+import {
+  sendHeyAnkitNotification,
+  requestNotificationPermission,
+  isNotificationSupported,
+  getNotificationPermission,
+} from '../lib/notifications';
 
 interface ChatScreenProps {
   conversationId?: string;
@@ -36,11 +42,30 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
   const [isTyping, setIsTyping] = useState(false);
   const [enlargedImageUrl, setEnlargedImageUrl] = useState<string | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [notifPerm, setNotifPerm] = useState<NotificationPermission>(getNotificationPermission());
 
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const isNearBottomRef = useRef<boolean>(true);
+
+  const handleToggleNotification = async () => {
+    if (notifPerm === 'granted') {
+      sendHeyAnkitNotification({
+        senderName: 'Hey Ankit',
+        preview: 'Branded notifications are active!',
+      });
+      return;
+    }
+    const perm = await requestNotificationPermission();
+    setNotifPerm(perm);
+    if (perm === 'granted') {
+      sendHeyAnkitNotification({
+        senderName: 'Hey Ankit',
+        preview: 'Branded notifications enabled!',
+      });
+    }
+  };
 
   // 1. Resolve or create conversation
   useEffect(() => {
@@ -205,6 +230,20 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
             }
 
             if (newMsg.sender_id !== user?.id) {
+              if (document.hidden) {
+                sendHeyAnkitNotification({
+                  senderName: partnerName,
+                  preview:
+                    newMsg.type === 'image'
+                      ? '📷 Sent a photo'
+                      : newMsg.body
+                      ? newMsg.body.length > 50
+                        ? newMsg.body.slice(0, 50) + '...'
+                        : newMsg.body
+                      : 'Sent a message',
+                  conversationId: convId,
+                });
+              }
               markRead(convId);
               setIsTyping(false);
             }
@@ -249,7 +288,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       }
       channel.unsubscribe();
     };
-  }, [conversation?.id, loadMessages, markRead, user?.id]);
+  }, [conversation?.id, loadMessages, markRead, user?.id, partnerName]);
 
   const scrollRafRef = useRef<number | null>(null);
 
@@ -452,6 +491,24 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
               </small>
             </div>
           </div>
+
+          {/* Notification Permission Toggle */}
+          {isNotificationSupported() && (
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.9 }}
+              onClick={handleToggleNotification}
+              title={notifPerm === 'granted' ? 'Notifications Enabled' : 'Enable Notifications'}
+              aria-label={notifPerm === 'granted' ? 'Notifications Enabled' : 'Enable Notifications'}
+              className="w-9 h-9 rounded-full flex items-center justify-center text-white hover:bg-white/15 transition-all flex-shrink-0 cursor-pointer"
+            >
+              {notifPerm === 'granted' ? (
+                <Bell className="w-4 h-4 text-emerald-300 stroke-[2.2]" />
+              ) : (
+                <BellOff className="w-4 h-4 text-white/70 stroke-[2]" />
+              )}
+            </motion.button>
+          )}
 
           {/* Theme Toggle Button */}
           <ThemeToggle />
