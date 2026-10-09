@@ -87,19 +87,23 @@ export const AuthScreen: React.FC = () => {
                   spellCheck="false"
                   value={username}
                   onChange={(e) => {
-                    setUsername(e.target.value.toLowerCase().trim());
+                    let val = e.target.value.toLowerCase().trim();
+                    if (val.includes('@')) {
+                      val = val.split('@')[0];
+                    }
+                    setUsername(val);
                     setErrorMessage(null);
                   }}
-                  placeholder="e.g. leslie"
+                  placeholder="e.g. ankit"
                   required
                   className="w-full bg-slate-50 dark:bg-teal-950/40 text-ink rounded-xl pl-10 pr-3.5 py-3 text-sm border border-line outline-none focus:ring-2 focus:ring-g2 focus:border-transparent transition-all placeholder:text-muted/50"
                 />
               </div>
-              {isRegister && (
-                <span className="text-[11px] text-muted block pl-1">
-                  3–20 lowercase letters, numbers, or underscores
-                </span>
-              )}
+              <span className="text-[11px] text-muted block pl-1">
+                {isRegister
+                  ? '3–20 lowercase letters or numbers. No @ or domain needed.'
+                  : 'Enter your unique username'}
+              </span>
             </div>
 
             {/* Password */}

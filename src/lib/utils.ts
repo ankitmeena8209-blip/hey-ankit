@@ -9,21 +9,26 @@ export function cn(...inputs: ClassValue[]) {
 // Username format validation: lowercase alphanumeric or underscore, 3-20 chars
 export const USERNAME_REGEX = /^[a-z0-9_]{3,20}$/;
 
-export function validateUsername(username: string): { valid: boolean; error?: string } {
-  const clean = username.trim().toLowerCase();
+export function validateUsername(username: string): { valid: boolean; cleanUsername: string; error?: string } {
+  // If user pasted an email by mistake, strip domain part
+  let clean = username.trim().toLowerCase();
+  if (clean.includes('@')) {
+    clean = clean.split('@')[0];
+  }
+
   if (!clean) {
-    return { valid: false, error: 'Username is required.' };
+    return { valid: false, cleanUsername: clean, error: 'Username is required.' };
   }
   if (clean.length < 3) {
-    return { valid: false, error: 'Username must be at least 3 characters.' };
+    return { valid: false, cleanUsername: clean, error: 'Username must be at least 3 characters.' };
   }
   if (clean.length > 20) {
-    return { valid: false, error: 'Username must be at most 20 characters.' };
+    return { valid: false, cleanUsername: clean, error: 'Username must be at most 20 characters.' };
   }
   if (!USERNAME_REGEX.test(clean)) {
-    return { valid: false, error: 'Only lowercase letters, numbers, and underscores allowed.' };
+    return { valid: false, cleanUsername: clean, error: 'Only lowercase letters, numbers, and underscores allowed.' };
   }
-  return { valid: true };
+  return { valid: true, cleanUsername: clean };
 }
 
 export function usernameToEmail(username: string): string {

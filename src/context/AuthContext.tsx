@@ -146,7 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, error: 'Password must be at least 8 characters long.' };
     }
 
-    const cleanUsername = username.trim().toLowerCase();
+    const cleanUsername = validCheck.cleanUsername;
     const email = usernameToEmail(cleanUsername);
 
     try {
@@ -161,8 +161,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
-        if (error.message.toLowerCase().includes('already registered') || error.message.toLowerCase().includes('unique')) {
+        const lowerErr = error.message.toLowerCase();
+        if (lowerErr.includes('already registered') || lowerErr.includes('unique') || lowerErr.includes('already exists')) {
           return { success: false, error: 'Username is already taken. Please choose another.' };
+        }
+        if (lowerErr.includes('rate limit') || lowerErr.includes('invalid email') || lowerErr.includes('validate email')) {
+          return {
+            success: false,
+            error:
+              "Supabase setup needed: In your Supabase Dashboard, go to Authentication > Providers > Email, and turn 'Confirm email' to OFF.",
+          };
         }
         return { success: false, error: error.message || 'Registration failed.' };
       }
