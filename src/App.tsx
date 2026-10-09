@@ -39,14 +39,9 @@ const MainRouter: React.FC = () => {
   if (loading) {
     return (
       <div className="h-dvh w-full bg-surface flex flex-col items-center justify-center text-ink gap-3 select-none">
-        <img
-          src="/logo-mark.png"
-          alt="Hey Ankit"
-          className="w-16 h-16 object-contain animate-pulse"
-        />
         <div className="flex items-center gap-2 text-ink">
-          <Loader2 className="w-4 h-4 animate-spin text-muted" />
-          <span className="font-display text-xl tracking-wide text-ink">
+          <Loader2 className="w-5 h-5 animate-spin text-muted" />
+          <span className="font-display text-2xl tracking-wide text-ink">
             Hey Ankit
           </span>
         </div>

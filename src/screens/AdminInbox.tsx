@@ -174,12 +174,7 @@ export const AdminInbox: React.FC = () => {
         <div className="absolute left-4 right-4 top-3 flex flex-col">
           {/* Top row: Title, ThemeToggle and Log out */}
           <div className="flex items-center justify-between h-11">
-            <div className="flex items-center gap-2.5">
-              <img
-                src="/logo-mark.png"
-                alt="Hey Ankit Logo"
-                className="w-8 h-8 object-contain filter brightness-110"
-              />
+            <div className="flex items-center">
               <h2
                 className="font-display font-normal text-[28px] leading-none text-white tracking-wide origin-left transition-transform duration-100"
                 style={{ transform: `scale(${1 - 0.15 * scrollProgress})` }}

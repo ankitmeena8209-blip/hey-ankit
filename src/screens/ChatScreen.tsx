@@ -353,8 +353,6 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       type: imagePath ? 'image' : 'text',
       body: text || null,
       image_path: imagePath,
-      is_one_time: imagePayload?.isOneTime ?? false,
-      viewed_by: [],
     });
 
     if (insertError) throw insertError;

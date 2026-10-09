@@ -91,6 +91,10 @@ export const WaveComposer: React.FC<WaveComposerProps> = ({
     const cleanText = text.trim();
     if ((!cleanText && !stagedImage) || isSubmitting || disabled) return;
 
+    const savedText = text;
+    const savedStaged = stagedImage;
+    const savedOneTime = isOneTime;
+
     try {
       setIsSubmitting(true);
       setIsFlying(true);
@@ -112,7 +116,12 @@ export const WaveComposer: React.FC<WaveComposerProps> = ({
       }
 
       await onSendMessage(currentText, imagePayload);
+      setImageError(null);
     } catch (err: unknown) {
+      // Restore draft if failed
+      setText(savedText);
+      setStagedImage(savedStaged);
+      setIsOneTime(savedOneTime);
       const msg = err instanceof Error ? err.message : 'Failed to send message.';
       setImageError(msg);
     } finally {

@@ -6,7 +6,7 @@ import { getInitials } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 
 export const AdminUsers: React.FC = () => {
-  const { session, user: currentUser } = useAuth();
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -39,35 +39,38 @@ export const AdminUsers: React.FC = () => {
   }, [fetchUsers]);
 
   const executeAction = async (action: 'disable' | 'restore' | 'delete', targetUserId: string) => {
-    if (!session?.access_token) return;
-
     setActionLoading(targetUserId);
     setFeedback(null);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-manage-user`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({ action, targetUserId }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Action failed on server.');
+      if (action === 'delete') {
+        const { error } = await supabase.rpc('admin_delete_user', {
+          p_target_user_id: targetUserId,
+        });
+        if (error) throw error;
+        setFeedback({ type: 'success', message: 'User deleted permanently.' });
+      } else {
+        const newStatus = action === 'disable' ? 'disabled' : 'active';
+        const { error } = await supabase.rpc('admin_set_user_status', {
+          p_target_user_id: targetUserId,
+          p_status: newStatus,
+        });
+        if (error) throw error;
+        setFeedback({
+          type: 'success',
+          message: `User ${action === 'disable' ? 'disabled' : 'restored'} successfully.`,
+        });
       }
 
-      setFeedback({ type: 'success', message: result.message || `User ${action}d successfully.` });
       await fetchUsers();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error executing admin action';
-      setFeedback({ type: 'error', message: `${msg} (Ensure Edge Function is deployed)` });
+      setFeedback({
+        type: 'error',
+        message: msg.includes('admin_delete_user') || msg.includes('admin_set_user_status')
+          ? 'Admin database functions need to be initialized in Supabase SQL editor.'
+          : msg,
+      });
     } finally {
       setActionLoading(null);
       setConfirmDialog(null);

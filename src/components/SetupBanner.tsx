@@ -6,11 +6,6 @@ export const SetupBanner: React.FC = () => {
     <div className="min-h-screen bg-page flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-surface text-ink rounded-3xl p-6 sm:p-8 shadow-2xl border border-line flex flex-col gap-5">
         <div className="flex items-center gap-3">
-          <img
-            src="/logo-mark.png"
-            alt="Hey Ankit Logo"
-            className="w-10 h-10 object-contain"
-          />
           <div>
             <h1 className="text-xl font-bold text-ink">Hey Ankit</h1>
             <p className="text-xs text-muted">Supabase Setup Required</p>

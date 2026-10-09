@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-import type { MessageAudit } from '../types/database';
+import type { MessageAudit, Profile } from '../types/database';
 import { Shield, Clock, Loader2, AlertCircle } from 'lucide-react';
 import { getInitials, getSignedImageUrl, formatMessageTime } from '../lib/utils';
 import { ImageModal } from '../components/ImageModal';
@@ -15,25 +15,35 @@ export const AdminUnsentLog: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data, error: fetchErr } = await supabase
+      const { data: auditData, error: fetchErr } = await supabase
         .from('message_audit')
-        .select(`
-          *,
-          sender:profiles!message_audit_sender_id_fkey(username),
-          deleted_by_user:profiles!message_audit_deleted_by_fkey(username)
-        `)
+        .select('*')
         .order('deleted_at', { ascending: false });
 
       if (fetchErr) throw fetchErr;
 
-      const auditRecords = (data as MessageAudit[]) || [];
+      // Fetch profiles to map usernames cleanly
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('*');
+
+      const profileMap = new Map<string, Profile>((profiles || []).map((p) => [p.id, p as Profile]));
+
+      const auditRecords = (auditData as MessageAudit[]) || [];
       const withImages = await Promise.all(
         auditRecords.map(async (record) => {
+          const enrichedRecord: MessageAudit = {
+            ...record,
+            sender: profileMap.get(record.sender_id),
+            deleted_by_user: profileMap.get(record.deleted_by),
+          };
+
           if (record.image_path) {
             const url = await getSignedImageUrl(record.image_path);
-            return { ...record, signed_url: url ?? undefined };
+            enrichedRecord.signed_url = url ?? undefined;
           }
-          return record;
+
+          return enrichedRecord;
         })
       );
 
