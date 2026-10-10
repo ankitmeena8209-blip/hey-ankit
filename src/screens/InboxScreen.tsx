@@ -14,6 +14,7 @@ import { ChatScreen } from './ChatScreen';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { UISwitchButton } from '../components/UISwitchButton';
 import { ThemeDecor } from '../components/decor/ThemeDecor';
+import { LinksyLogo } from '../components/LinksyLogo';
 import {
   Search,
   MessageSquare,
@@ -262,12 +263,10 @@ export const InboxScreen: React.FC<InboxScreenProps> = ({ initialConversationId 
               </button>
 
               <div className="flex flex-col justify-center">
-                <h1
-                  className="font-display font-normal text-[26px] leading-none text-white tracking-wide origin-left transition-transform duration-100"
+                <LinksyLogo
+                  className="h-6 w-auto text-[var(--hi,white)] origin-left transition-transform duration-100"
                   style={{ transform: `scale(${1 - 0.12 * scrollProgress})` }}
-                >
-                  Linksy
-                </h1>
+                />
               </div>
             </div>
 

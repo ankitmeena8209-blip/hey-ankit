@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShieldAlert } from 'lucide-react';
+import { LinksyLogo } from './LinksyLogo';
 
 export const SetupBanner: React.FC = () => {
   return (
@@ -7,7 +8,7 @@ export const SetupBanner: React.FC = () => {
       <div className="max-w-md w-full bg-surface text-ink rounded-3xl p-6 sm:p-8 shadow-2xl border border-line flex flex-col gap-5">
         <div className="flex items-center gap-3">
           <div>
-            <h1 className="text-xl font-bold text-ink">Linksy</h1>
+            <LinksyLogo className="h-7 w-auto text-ink mb-1" />
             <p className="text-xs text-muted">Supabase Setup Required</p>
           </div>
         </div>

@@ -6,6 +6,7 @@ import { UISwitchButton } from '../components/UISwitchButton';
 import { ThemeDecor } from '../components/decor/ThemeDecor';
 import { useUITheme } from '../context/UIThemeContext';
 import { getFramerTransition } from '../theme/uiThemes';
+import { LinksyLogo } from '../components/LinksyLogo';
 import { ArrowRight } from 'lucide-react';
 
 interface WelcomeScreenProps {
@@ -37,10 +38,9 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGoSignup, onGoLo
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={getFramerTransition(themeDef.motionPreset, 0.25)}
+          className="flex items-center mb-1"
         >
-          <h1 className="font-display text-[46px] leading-tight text-ink tracking-tight">
-            Linksy
-          </h1>
+          <LinksyLogo className="h-12 sm:h-14 w-auto max-w-[260px] text-ink" />
         </motion.div>
 
         <motion.p

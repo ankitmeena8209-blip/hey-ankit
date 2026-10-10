@@ -11,6 +11,7 @@ import { WelcomeScreen } from './screens/WelcomeScreen';
 import { AuthScreen } from './screens/AuthScreen';
 import { InboxScreen } from './screens/InboxScreen';
 import { Loader2 } from 'lucide-react';
+import { LinksyLogo } from './components/LinksyLogo';
 
 const MainRouter: React.FC = () => {
   const { user, profile, loading } = useAuth();
@@ -73,13 +74,9 @@ const MainRouter: React.FC = () => {
     return (
       <div className="h-dvh w-full bg-surface flex flex-col items-center justify-between py-8 text-ink select-none">
         <div />
-        <div className="flex flex-col items-center gap-2 text-ink">
-          <div className="flex items-center gap-2">
-            <Loader2 className="w-5 h-5 animate-spin text-muted" />
-            <span className="font-display text-2xl tracking-wide text-ink">
-              Linksy
-            </span>
-          </div>
+        <div className="flex flex-col items-center gap-3 text-ink">
+          <LinksyLogo className="h-10 w-auto text-ink" />
+          <Loader2 className="w-5 h-5 animate-spin text-muted" />
         </div>
         <div className="text-[10px] text-muted/60 font-medium pb-2">
           © 2026 FRZI TOOLS. All rights reserved.
