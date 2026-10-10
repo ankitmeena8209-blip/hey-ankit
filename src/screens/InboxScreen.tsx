@@ -12,6 +12,7 @@ import { AdminUsers } from './AdminUsers';
 import { AdminUnsentLog } from './AdminUnsentLog';
 import { ChatScreen } from './ChatScreen';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { UISwitchButton } from '../components/UISwitchButton';
 import {
   Search,
   MessageSquare,
@@ -303,6 +304,7 @@ export const InboxScreen: React.FC<InboxScreenProps> = ({ initialConversationId 
                 <UserPlus className="w-4 h-4" />
               </button>
 
+              <UISwitchButton />
               <ThemeToggle />
             </div>
           </div>

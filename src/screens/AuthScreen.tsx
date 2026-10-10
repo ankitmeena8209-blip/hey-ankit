@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { Tide } from '../components/Tide';
 import { ValidationPill } from '../components/ValidationPill';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { UISwitchButton } from '../components/UISwitchButton';
 import { validateUsername } from '../lib/utils';
 
 interface AuthScreenProps {
@@ -89,8 +90,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
   return (
     <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
-      {/* Top right Theme Switcher */}
-      <div className="absolute top-3.5 right-3.5 z-30">
+      {/* Top right Theme Switcher & Look Switcher */}
+      <div className="absolute top-3.5 right-3.5 z-30 flex items-center gap-2">
+        <UISwitchButton />
         <ThemeToggle />
       </div>
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MotionConfig } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { UIThemeProvider } from './context/UIThemeContext';
 import { PresenceProvider } from './context/PresenceContext';
 import { isSupabaseConfigured } from './lib/supabase';
 import { SetupBanner } from './components/SetupBanner';
@@ -113,13 +114,15 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <MotionConfig reducedMotion="user">
-        <AuthProvider>
-          <PresenceProvider>
-            <MainRouter />
-          </PresenceProvider>
-        </AuthProvider>
-      </MotionConfig>
+      <UIThemeProvider>
+        <MotionConfig reducedMotion="user">
+          <AuthProvider>
+            <PresenceProvider>
+              <MainRouter />
+            </PresenceProvider>
+          </AuthProvider>
+        </MotionConfig>
+      </UIThemeProvider>
     </ThemeProvider>
   );
 }

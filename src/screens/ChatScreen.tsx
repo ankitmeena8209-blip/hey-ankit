@@ -10,6 +10,7 @@ import { WaveComposer } from '../components/WaveComposer';
 import { MessageBubble } from '../components/MessageBubble';
 import { ImageModal } from '../components/ImageModal';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { UISwitchButton } from '../components/UISwitchButton';
 import { UserAvatar } from '../components/UserAvatar';
 import { formatChatDate, getDisplayName } from '../lib/utils';
 import { ArrowLeft, Loader2, Bell, BellOff } from 'lucide-react';
@@ -545,6 +546,9 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
             </motion.button>
           )}
 
+          {/* UI Switch Button */}
+          <UISwitchButton />
+
           {/* Theme Toggle Button */}
           <ThemeToggle />
 
@@ -554,7 +558,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.95 }}
             onClick={logout}
-            className="h-9 px-3.5 rounded-full border border-white/40 text-white text-xs font-semibold hover:bg-white/15 transition-all flex-shrink-0 select-none flex items-center justify-center cursor-pointer"
+            className="h-9 px-3.5 rounded-full ui-hbtn text-xs font-semibold hover:opacity-90 transition-all flex-shrink-0 select-none flex items-center justify-center cursor-pointer"
           >
             Log out
           </motion.button>
