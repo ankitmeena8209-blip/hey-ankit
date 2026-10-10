@@ -9,18 +9,18 @@ interface ValidationPillProps {
 export const ValidationPill: React.FC<ValidationPillProps> = ({ isValid, label }) => {
   return (
     <div
-      className="w-[52px] h-[36px] rounded-full bg-pill shadow-neu-pill border border-line/40 flex items-center justify-center flex-shrink-0 relative overflow-hidden select-none"
+      className="w-[52px] h-[36px] rounded-full ui-pill shadow-neu-pill border border-line/40 flex items-center justify-center flex-shrink-0 relative overflow-hidden select-none"
       role="status"
       aria-live="polite"
     >
       <span className="sr-only">{isValid ? `${label} valid` : `${label} invalid`}</span>
 
       <svg width="22" height="22" viewBox="0 0 24 24" className="overflow-visible">
-        {/* Invalid Orange X */}
+        {/* Invalid X */}
         <motion.path
           d="M7 7l10 10M17 7L7 17"
           fill="none"
-          stroke="var(--color-bad)"
+          stroke="var(--px)"
           strokeWidth="2.6"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -37,7 +37,7 @@ export const ValidationPill: React.FC<ValidationPillProps> = ({ isValid, label }
         <motion.path
           d="M5 12.5l4.5 4.5L19 7.5"
           fill="none"
-          stroke="var(--color-ok)"
+          stroke="var(--pc)"
           strokeWidth="2.6"
           strokeLinecap="round"
           strokeLinejoin="round"

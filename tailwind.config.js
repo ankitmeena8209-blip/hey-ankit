@@ -40,7 +40,8 @@ export default {
         g3: '#383838',
       },
       fontFamily: {
-        display: ['Anton', 'Impact', '"Arial Narrow"', 'sans-serif'],
+        display: ['var(--fnt-d)', 'Anton', 'Impact', '"Arial Narrow"', 'sans-serif'],
+        body: ['var(--fnt-b)', '"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
         heading: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
         sans: [
           'Inter',
@@ -53,6 +54,12 @@ export default {
         ],
       },
       boxShadow: {
+        field: 'var(--fl-sh)',
+        btn: 'var(--bt-sh)',
+        ghost: 'var(--gh-sh)',
+        card: 'var(--csh)',
+        tab: 'var(--tb-sh)',
+        comp: 'var(--cm-sh)',
         neumorphic: 'var(--shadow-neu-raised)',
         'neu-raised': 'var(--shadow-neu-raised)',
         'neu-inset': 'var(--shadow-neu-inset)',
@@ -63,7 +70,7 @@ export default {
         menu: '0 8px 22px rgba(0,0,0,.25)',
       },
       borderRadius: {
-        'bubble': '16px',
+        bubble: '16px',
         'bubble-tail': '4px',
       },
     },

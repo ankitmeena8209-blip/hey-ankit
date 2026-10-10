@@ -73,7 +73,6 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGoSignup, onGoLo
 
         {/* Footer */}
         <footer className="w-full text-center pt-5 pb-1 flex flex-col gap-0.5 text-[11px] font-medium text-muted/75">
-          <span className="font-semibold text-ink/75">Linksy — by FRZI TOOLS</span>
           <span className="text-[10px] text-muted/60">© 2026 FRZI TOOLS. All rights reserved.</span>
         </footer>
       </div>

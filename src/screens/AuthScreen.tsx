@@ -292,7 +292,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
           </motion.button>
 
           <footer className="w-full text-center pt-1.5 pb-0.5 text-[10px] text-muted/75">
-            Linksy — by FRZI TOOLS • © 2026 FRZI TOOLS. All rights reserved.
+            © 2026 FRZI TOOLS. All rights reserved.
           </footer>
         </div>
       </div>

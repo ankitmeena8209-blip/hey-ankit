@@ -1,0 +1,137 @@
+@layer components {
+  /* Dynamic Background and Surface */
+  .ui-bg {
+    background: var(--bg);
+  }
+
+  .ui-surface {
+    background-color: var(--surface);
+  }
+
+  /* Form & Input Field */
+  .ui-field {
+    background: var(--fl-bg);
+    border: var(--fl-bd);
+    box-shadow: var(--fl-sh);
+    border-radius: var(--fl-r);
+    color: var(--fl-ink);
+  }
+
+  /* Primary Button */
+  .ui-btn {
+    background: var(--bt-bg);
+    color: var(--bt-ink);
+    box-shadow: var(--bt-sh);
+    border-radius: var(--bt-r);
+    border: var(--bt-bd);
+    transition: transform 0.25s var(--sp), box-shadow 0.25s, opacity 0.2s;
+  }
+  .ui-btn:active {
+    transform: var(--press);
+  }
+
+  /* Ghost Button */
+  .ui-btn-ghost {
+    background: var(--gh-bg);
+    color: var(--gh-ink);
+    border: var(--gh-bd);
+    box-shadow: var(--gh-sh);
+    transition: transform 0.25s var(--sp), opacity 0.2s;
+  }
+  .ui-btn-ghost:active {
+    transform: var(--press);
+  }
+
+  /* Card / Sheet container */
+  .ui-card {
+    background: var(--cb);
+    border: var(--cbd);
+    box-shadow: var(--csh);
+    border-radius: var(--cr);
+    backdrop-filter: var(--cbl);
+    -webkit-backdrop-filter: var(--cbl);
+  }
+
+  /* Chat Message Bubbles */
+  .ui-bubble-sent {
+    background: var(--sn-bg);
+    color: var(--sn-ink);
+    box-shadow: var(--sn-sh);
+    border-radius: var(--br) var(--br) 4px var(--br);
+  }
+
+  .ui-bubble-recv {
+    background: var(--rc-bg);
+    color: var(--rc-ink);
+    border: var(--rc-bd);
+    box-shadow: var(--rc-sh);
+    border-radius: var(--br) var(--br) var(--br) 4px;
+  }
+
+  /* Composer bar */
+  .ui-composer {
+    background: var(--cm-bg);
+    border: var(--cm-bd);
+    box-shadow: var(--cm-sh);
+    border-radius: var(--cm-r);
+    backdrop-filter: var(--cm-bl);
+    -webkit-backdrop-filter: var(--cm-bl);
+  }
+
+  /* Tabs navigation bar */
+  .ui-tabs {
+    background: var(--tb-bg);
+    border: var(--tb-bd);
+    box-shadow: var(--tb-sh);
+    border-radius: var(--tb-r);
+    backdrop-filter: var(--tb-bl);
+    -webkit-backdrop-filter: var(--tb-bl);
+  }
+
+  /* User Avatar */
+  .ui-avatar {
+    background: var(--av-bg);
+    color: var(--av-ink);
+    font-family: var(--fnt-d);
+    font-weight: var(--dw);
+  }
+
+  /* Validation / Status Pill */
+  .ui-pill {
+    background: var(--pl-bg);
+    border: var(--pl-bd);
+  }
+
+  /* Header icon / control button */
+  .ui-hbtn {
+    height: 34px;
+    min-width: 34px;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--hi);
+    border: 1px solid color-mix(in srgb, currentColor 38%, transparent);
+    background: color-mix(in srgb, currentColor 10%, transparent);
+    cursor: pointer;
+    transition: transform 0.25s var(--sp), background 0.2s, color 0.2s;
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .ui-hbtn::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+  }
+  .ui-hbtn:active {
+    transform: scale(0.92);
+  }
+
+  /* Typography title */
+  .ui-title {
+    font-family: var(--fnt-d);
+    font-weight: var(--dw);
+    letter-spacing: var(--dt);
+  }
+}

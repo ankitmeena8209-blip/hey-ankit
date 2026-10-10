@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 
@@ -15,7 +15,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
       whileTap={{ scale: 0.9 }}
       onClick={toggleTheme}
       aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-      className={`w-[34px] h-[34px] rounded-full grid place-items-center flex-shrink-0 border border-white/40 text-white bg-white/10 hover:bg-white/20 transition-all select-none ${className}`}
+      className={`ui-hbtn select-none ${className}`}
     >
       {theme === 'light' ? (
         <motion.svg

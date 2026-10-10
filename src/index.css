@@ -1,98 +1,39 @@
+@import "./styles/ui/default.css";
+@import "./styles/ui-components.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --color-page: #D6D8DC;
-  --color-surface: #E8EAED;
-  --color-ink: #111317;
-  --color-muted: #656972;
-  --color-line: #D1D4DB;
-  --color-field: #DFE2E6;
-  --color-tide: #070708;
-  --color-l1: #141416;
-  --color-l2: #222326;
-  --color-l3: #323438;
-  --color-btn: #111317;
-  --color-btn-ink: #FFFFFF;
-  --color-dis: #8E939D;
-  --color-pill: #111317;
-  --color-ok: #10B981;
-  --color-bad: #EF4444;
-  --color-bubble-sent: #14161B;
-  --color-bubble-sent-ink: #FFFFFF;
-  --color-bubble-received: #DFE2E6;
-  --color-badge: #111317;
-  --color-badge-ink: #FFFFFF;
-  
-  --shadow-neu-raised: 5px 5px 12px rgba(0,0,0,.08), -4px -4px 10px rgba(255,255,255,.85);
-  --shadow-neu-inset: inset 2.5px 2.5px 5px rgba(0,0,0,.11), inset -2px -2px 5px rgba(255,255,255,.8);
-  --shadow-neu-flat: 3px 3px 8px rgba(0,0,0,.07), -2px -2px 6px rgba(255,255,255,.8);
-  --shadow-neu-pill: 3px 3px 7px rgba(0,0,0,.07), -2px -2px 6px rgba(255,255,255,.85);
-  --shadow-neu-float: 8px 12px 24px rgba(0,0,0,.12), -4px -4px 12px rgba(255,255,255,.85);
-  --spring-ease: cubic-bezier(.2, 1.35, .4, 1);
-}
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--mu);
+  --color-line: var(--ln);
+  --color-field: var(--fl-bg);
+  --color-tide: var(--hb);
+  --color-l1: var(--l1);
+  --color-l2: var(--l2);
+  --color-l3: var(--l3);
+  --color-btn: var(--bt-bg);
+  --color-btn-ink: var(--bt-ink);
+  --color-dis: var(--dis-bg);
+  --color-pill: var(--pl-bg);
+  --color-ok: var(--ok);
+  --color-bad: var(--bad);
+  --color-bubble-sent: var(--sn-bg);
+  --color-bubble-sent-ink: var(--sn-ink);
+  --color-bubble-received: var(--rc-bg);
+  --color-badge: var(--bt-bg);
+  --color-badge-ink: var(--bt-ink);
 
-:root[data-theme="dark"] {
-  --color-page: #0C0D0E;
-  --color-surface: #141517;
-  --color-ink: #F3F4F6;
-  --color-muted: #9CA3AF;
-  --color-line: #222428;
-  --color-field: #1C1E22;
-  --color-tide: #050506;
-  --color-l1: #101113;
-  --color-l2: #1A1B1E;
-  --color-l3: #26272B;
-  --color-btn: #F3F4F6;
-  --color-btn-ink: #111317;
-  --color-dis: #373A40;
-  --color-pill: #050506;
-  --color-ok: #10B981;
-  --color-bad: #EF4444;
-  --color-bubble-sent: #F3F4F6;
-  --color-bubble-sent-ink: #111317;
-  --color-bubble-received: #1E2024;
-  --color-badge: #F3F4F6;
-  --color-badge-ink: #111317;
-
-  --shadow-neu-raised: 5px 5px 14px rgba(0,0,0,.65), -2px -2px 8px rgba(255,255,255,.03);
-  --shadow-neu-inset: inset 2.5px 2.5px 5px rgba(0,0,0,.7), inset -1.5px -1.5px 4px rgba(255,255,255,.025);
-  --shadow-neu-flat: 3px 3px 8px rgba(0,0,0,.45), -1px -1px 5px rgba(255,255,255,.025);
-  --shadow-neu-pill: 3px 3px 8px rgba(0,0,0,.5), -1.5px -1.5px 5px rgba(255,255,255,.03);
-  --shadow-neu-float: 10px 16px 30px rgba(0,0,0,.8), -3px -3px 10px rgba(255,255,255,.03);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]):not([data-theme="dark"]) {
-    --color-page: #0C0D0E;
-    --color-surface: #141517;
-    --color-ink: #F3F4F6;
-    --color-muted: #9CA3AF;
-    --color-line: #222428;
-    --color-field: #1C1E22;
-    --color-tide: #050506;
-    --color-l1: #101113;
-    --color-l2: #1A1B1E;
-    --color-l3: #26272B;
-    --color-btn: #F3F4F6;
-    --color-btn-ink: #111317;
-    --color-dis: #373A40;
-    --color-pill: #050506;
-    --color-ok: #10B981;
-    --color-bad: #EF4444;
-    --color-bubble-sent: #F3F4F6;
-    --color-bubble-sent-ink: #111317;
-    --color-bubble-received: #1E2024;
-    --color-badge: #F3F4F6;
-    --color-badge-ink: #111317;
-
-    --shadow-neu-raised: 5px 5px 14px rgba(0,0,0,.65), -2px -2px 8px rgba(255,255,255,.03);
-    --shadow-neu-inset: inset 2.5px 2.5px 5px rgba(0,0,0,.7), inset -1.5px -1.5px 4px rgba(255,255,255,.025);
-    --shadow-neu-flat: 3px 3px 8px rgba(0,0,0,.45), -1px -1px 5px rgba(255,255,255,.025);
-    --shadow-neu-pill: 3px 3px 8px rgba(0,0,0,.5), -1.5px -1.5px 5px rgba(255,255,255,.03);
-    --shadow-neu-float: 10px 16px 30px rgba(0,0,0,.8), -3px -3px 10px rgba(255,255,255,.03);
-  }
+  --shadow-neu-raised: var(--bt-sh);
+  --shadow-neu-inset: var(--fl-sh);
+  --shadow-neu-flat: var(--gh-sh);
+  --shadow-neu-pill: var(--gh-sh);
+  --shadow-neu-float: var(--bt-sh);
+  --spring-ease: var(--sp);
 }
 
 * {
@@ -106,9 +47,9 @@ html, body {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background-color: var(--color-page);
-  color: var(--color-ink);
-  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: var(--page);
+  color: var(--ink);
+  font-family: var(--fnt-b, 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -120,7 +61,7 @@ html, body {
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  background-color: var(--color-surface);
+  background: var(--bg);
 }
 
 .h-dvh {
@@ -134,36 +75,57 @@ html, body {
   padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* Neumorphic shadow utility shortcuts */
+/* Semantic shadow utility shortcuts */
+.shadow-field {
+  box-shadow: var(--fl-sh);
+}
+.shadow-btn {
+  box-shadow: var(--bt-sh);
+}
+.shadow-ghost {
+  box-shadow: var(--gh-sh);
+}
+.shadow-card {
+  box-shadow: var(--csh);
+}
+.shadow-tab {
+  box-shadow: var(--tb-sh);
+}
+.shadow-comp {
+  box-shadow: var(--cm-sh);
+}
+
+/* Backward-compatible Neumorphic shadow utility shortcuts */
 .shadow-neu-raised {
-  box-shadow: var(--shadow-neu-raised);
+  box-shadow: var(--bt-sh);
 }
 .shadow-neu-inset {
-  box-shadow: var(--shadow-neu-inset);
+  box-shadow: var(--fl-sh);
 }
 .shadow-neu-flat {
-  box-shadow: var(--shadow-neu-flat);
+  box-shadow: var(--gh-sh);
 }
 .shadow-neu-pill {
-  box-shadow: var(--shadow-neu-pill);
+  box-shadow: var(--gh-sh);
 }
 .shadow-neu-float {
-  box-shadow: var(--shadow-neu-float);
+  box-shadow: var(--bt-sh);
 }
 
 /* Bubble styling */
 .bubble-sent {
-  border-radius: 16px 16px 4px 16px;
-  background-color: var(--color-bubble-sent);
-  color: var(--color-bubble-sent-ink);
-  box-shadow: var(--shadow-neu-raised);
+  border-radius: var(--br, 16px) var(--br, 16px) 4px var(--br, 16px);
+  background: var(--sn-bg);
+  color: var(--sn-ink);
+  box-shadow: var(--sn-sh);
 }
 
 .bubble-received {
-  border-radius: 16px 16px 16px 4px;
-  background-color: var(--color-bubble-received);
-  color: var(--color-ink);
-  box-shadow: var(--shadow-neu-raised);
+  border-radius: var(--br, 16px) var(--br, 16px) var(--br, 16px) 4px;
+  background: var(--rc-bg);
+  color: var(--rc-ink);
+  border: var(--rc-bd);
+  box-shadow: var(--rc-sh);
 }
 
 /* Animated wave sway for welcome layer drift */
@@ -216,12 +178,37 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.12);
-  color: #FFFFFF;
+  border: 1px solid color-mix(in srgb, currentColor 38%, transparent);
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  color: var(--hi);
   cursor: pointer;
-  transition: transform .2s cubic-bezier(.2, 1.35, .4, 1), background .2s;
+  transition: transform .2s var(--sp), background .2s;
 }
 .theme-btn:active {
   transform: scale(0.92);
 }
+
+/* View transitions */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+

@@ -1,0 +1,186 @@
+/* ===== UI 0: Linksy Wave (existing default) ===== */
+:root,
+:root[data-ui="default"] {
+  --page: #d6d8dc;
+  --bg: #e8eaed;
+  --ink: #111317;
+  --mu: #656972;
+  --ln: #d1d4db;
+
+  /* Header / Tide */
+  --hb: linear-gradient(150deg, #070708, #16171a);
+  --hi: #ffffff;
+  --hbd: 0;
+  --hbl: none;
+  --hsh: none;
+  --tr: 0;
+  --tin: 0;
+  --wm: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 340 40' preserveAspectRatio='none'%3E%3Cpath d='M0 0H340V20C290 42 230 6 170 22S60 40 0 12Z'/%3E%3C/svg%3E");
+  --mk: 39px;
+  --edge: block;
+
+  /* Cards / Modals */
+  --cb: transparent;
+  --cbd: 0;
+  --csh: none;
+  --cbl: none;
+  --cr: 0;
+  --cp: 0;
+
+  /* Fields / Inputs */
+  --fl-bg: #dfe2e6;
+  --fl-bd: 2px solid transparent;
+  --fl-sh: inset 2.5px 2.5px 5px rgba(0, 0, 0, 0.11), inset -2px -2px 5px rgba(255, 255, 255, 0.8);
+  --fl-r: 12px;
+  --fl-ink: #111317;
+  --fl-ph: #656972;
+
+  /* Primary Button */
+  --bt-bg: #111317;
+  --bt-ink: #ffffff;
+  --bt-sh: 5px 5px 12px rgba(0, 0, 0, 0.16), -3px -3px 8px rgba(255, 255, 255, 0.8);
+  --bt-r: 13px;
+  --bt-bd: 0;
+
+  /* Ghost Button */
+  --gh-bg: #dfe2e6;
+  --gh-ink: #111317;
+  --gh-bd: 0;
+  --gh-sh: 3px 3px 8px rgba(0, 0, 0, 0.08), -2px -2px 6px rgba(255, 255, 255, 0.8);
+
+  /* Message Bubbles */
+  --sn-bg: #14161b;
+  --sn-ink: #ffffff;
+  --sn-sh: 3px 3px 8px rgba(0, 0, 0, 0.2);
+  --rc-bg: #dfe2e6;
+  --rc-ink: #111317;
+  --rc-bd: 0;
+  --rc-sh: 3px 3px 8px rgba(0, 0, 0, 0.07), -2px -2px 6px rgba(255, 255, 255, 0.8);
+  --br: 15px;
+
+  /* Tabs Bar */
+  --tb-bg: #dfe2e6;
+  --tb-bd: 0;
+  --tb-sh: 5px 5px 12px rgba(0, 0, 0, 0.1), -3px -3px 8px rgba(255, 255, 255, 0.8);
+  --tb-ink: #656972;
+  --tb-ind: #111317;
+  --tb-indi: #ffffff;
+  --tb-r: 23px;
+  --tb-bl: none;
+
+  /* Composer */
+  --cm-bg: #e8eaed;
+  --cm-bd: 0;
+  --cm-sh: 5px 5px 12px rgba(0, 0, 0, 0.1), -3px -3px 8px rgba(255, 255, 255, 0.8);
+  --cm-bl: none;
+  --cm-r: 24px;
+
+  /* Accents / Indicators */
+  --ok: #10b981;
+  --bad: #ef4444;
+  --acc: #111317;
+  --pl-bg: #111317;
+  --pl-bd: 0;
+  --px: #ff8a63;
+  --pc: #34d399;
+  --dis-bg: #8e939d;
+  --dis-ink: #e5e7eb;
+
+  /* Avatars & Surfaces */
+  --hav-bg: #ffffff;
+  --hav-ink: #111317;
+  --av-bg: #111317;
+  --av-ink: #ffffff;
+  --pop: #e8eaed;
+  --surface: #e8eaed;
+  --meta-color: #e8eaed;
+
+  /* Typography */
+  --fnt-d: Anton, Impact, "Arial Narrow", sans-serif;
+  --dw: 400;
+  --dt: 0.01em;
+  --fnt-b: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+
+  /* Motion & Dynamics */
+  --sp: cubic-bezier(0.2, 1.35, 0.4, 1);
+  --press: scale(0.94);
+  --rise: translateY(16px);
+
+  /* Layout & Insets */
+  --rw-ink: #111317;
+  --rw-mu: #656972;
+  --sht-bg: transparent;
+  --sht-clip: none;
+  --sht-mt: 0px;
+  --top-ink: #ffffff;
+  --pad-chat: 104px;
+  --pad-inbox: 160px;
+  --hc-top: 12px;
+  --hi-top: 14px;
+  --auth-top: 168px;
+  --blk-ink: #111317;
+  --blk-mu: #656972;
+  --play-d: grid;
+  --prim-d: none;
+  --l1: #141416;
+  --l2: #222326;
+  --l3: #323438;
+}
+
+:root[data-theme="dark"],
+:root[data-ui="default"][data-theme="dark"] {
+  --page: #0c0d0e;
+  --bg: #141517;
+  --ink: #f3f4f6;
+  --mu: #9ca3af;
+  --ln: #222428;
+
+  --hb: linear-gradient(150deg, #050506, #0f1012);
+  --fl-bg: #1c1e22;
+  --fl-sh: inset 2.5px 2.5px 5px rgba(0, 0, 0, 0.7), inset -1.5px -1.5px 4px rgba(255, 255, 255, 0.025);
+  --fl-ink: #f3f4f6;
+  --fl-ph: #9ca3af;
+
+  --bt-bg: #f3f4f6;
+  --bt-ink: #111317;
+  --bt-sh: 5px 5px 14px rgba(0, 0, 0, 0.65), -2px -2px 8px rgba(255, 255, 255, 0.03);
+
+  --gh-bg: #1c1e22;
+  --gh-ink: #f3f4f6;
+  --gh-sh: 3px 3px 8px rgba(0, 0, 0, 0.5);
+
+  --sn-bg: #f3f4f6;
+  --sn-ink: #111317;
+  --rc-bg: #1e2024;
+  --rc-ink: #f3f4f6;
+  --rc-sh: 3px 3px 8px rgba(0, 0, 0, 0.5);
+
+  --tb-bg: #1c1e22;
+  --tb-sh: 5px 5px 14px rgba(0, 0, 0, 0.65), -2px -2px 8px rgba(255, 255, 255, 0.03);
+  --tb-ink: #9ca3af;
+  --tb-ind: #f3f4f6;
+  --tb-indi: #111317;
+
+  --cm-bg: #141517;
+  --cm-sh: 5px 5px 14px rgba(0, 0, 0, 0.65), -2px -2px 8px rgba(255, 255, 255, 0.03);
+
+  --acc: #f3f4f6;
+  --pl-bg: #050506;
+  --hav-bg: #ffffff;
+  --av-bg: #f3f4f6;
+  --av-ink: #111317;
+  --pop: #1c1e22;
+  --surface: #141517;
+  --meta-color: #141517;
+
+  --rw-ink: #f3f4f6;
+  --rw-mu: #9ca3af;
+  --blk-ink: #f3f4f6;
+  --blk-mu: #9ca3af;
+  --dis-bg: #373a40;
+  --dis-ink: #9ca3af;
+
+  --l1: #101113;
+  --l2: #1a1b1e;
+  --l3: #26272b;
+}

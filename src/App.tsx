@@ -62,7 +62,8 @@ const MainRouter: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-dvh w-full bg-surface flex flex-col items-center justify-center text-ink gap-3 select-none">
+      <div className="h-dvh w-full bg-surface flex flex-col items-center justify-between py-8 text-ink select-none">
+        <div />
         <div className="flex flex-col items-center gap-2 text-ink">
           <div className="flex items-center gap-2">
             <Loader2 className="w-5 h-5 animate-spin text-muted" />
@@ -70,7 +71,9 @@ const MainRouter: React.FC = () => {
               Linksy
             </span>
           </div>
-          <span className="text-[11px] text-muted font-medium">by FRZI TOOLS</span>
+        </div>
+        <div className="text-[10px] text-muted/60 font-medium pb-2">
+          © 2026 FRZI TOOLS. All rights reserved.
         </div>
       </div>
     );
