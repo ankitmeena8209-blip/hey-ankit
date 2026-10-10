@@ -40,12 +40,12 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   const gradientClass = getAvatarColor(username);
 
   return (
-    <div className={`relative flex-shrink-0 select-none ${className}`}>
+    <div className={`relative flex-shrink-0 select-none rounded-full ${sizeClasses[size]} ${className}`}>
       {avatarUrl ? (
         <img
           src={avatarUrl}
           alt={displayName}
-          className={`${sizeClasses[size]} rounded-full object-cover shadow-neu-raised border border-line/40 bg-surface`}
+          className="w-full h-full rounded-full object-cover shadow-neu-raised border border-line/40 bg-surface"
           loading="lazy"
           onError={(e) => {
             // Fallback to initials if image URL fails
@@ -54,7 +54,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         />
       ) : (
         <div
-          className={`${sizeClasses[size]} rounded-full bg-gradient-to-tr ${gradientClass} text-white font-display font-bold flex items-center justify-center shadow-neu-raised border border-white/15`}
+          className={`w-full h-full rounded-full bg-gradient-to-tr ${gradientClass} text-white font-display font-bold flex items-center justify-center shadow-neu-raised border border-white/15`}
         >
           {initials}
         </div>
@@ -71,3 +71,4 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     </div>
   );
 };
+

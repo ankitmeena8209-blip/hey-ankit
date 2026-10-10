@@ -250,27 +250,24 @@ export const InboxScreen: React.FC<InboxScreenProps> = ({ initialConversationId 
               <button
                 type="button"
                 onClick={() => setIsProfileModalOpen(true)}
-                className="relative group cursor-pointer focus:outline-none"
+                className="relative group cursor-pointer focus:outline-none rounded-full"
                 title="Edit your profile"
                 aria-label="Edit your profile"
               >
                 <UserAvatar
                   profile={profile}
                   size="sm"
-                  className="ring-2 ring-white/30 hover:ring-white transition-all"
+                  className="rounded-full ring-2 ring-white/30 hover:ring-white transition-all"
                 />
               </button>
 
-              <div className="flex flex-col">
+              <div className="flex flex-col justify-center">
                 <h1
                   className="font-display font-normal text-[26px] leading-none text-white tracking-wide origin-left transition-transform duration-100"
                   style={{ transform: `scale(${1 - 0.12 * scrollProgress})` }}
                 >
                   Linksy
                 </h1>
-                <span className="text-[10px] text-white/70 font-medium tracking-tight">
-                  by FRZI TOOLS
-                </span>
               </div>
             </div>
 
@@ -503,7 +500,7 @@ export const InboxScreen: React.FC<InboxScreenProps> = ({ initialConversationId 
               }`}
             >
               <Users className="w-3.5 h-3.5" />
-              <span>Admin</span>
+              <span>Users</span>
               {activeTab === 'users' && (
                 <motion.div
                   layoutId="inbox-tab-pill"
