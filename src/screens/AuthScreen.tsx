@@ -7,6 +7,7 @@ import { Tide } from '../components/Tide';
 import { ValidationPill } from '../components/ValidationPill';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { UISwitchButton } from '../components/UISwitchButton';
+import { ThemeDecor } from '../components/decor/ThemeDecor';
 import { validateUsername } from '../lib/utils';
 
 interface AuthScreenProps {
@@ -90,6 +91,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
   return (
     <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
+      {/* Visual Decor per UI look */}
+      <ThemeDecor screen="auth" />
+
       {/* Top right Theme Switcher & Look Switcher */}
       <div className="absolute top-3.5 right-3.5 z-30 flex items-center gap-2">
         <UISwitchButton />

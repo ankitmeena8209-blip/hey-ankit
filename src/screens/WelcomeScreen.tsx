@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Tide } from '../components/Tide';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { UISwitchButton } from '../components/UISwitchButton';
+import { ThemeDecor } from '../components/decor/ThemeDecor';
 import { ArrowRight } from 'lucide-react';
 
 interface WelcomeScreenProps {
@@ -13,6 +14,9 @@ interface WelcomeScreenProps {
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGoSignup, onGoLogin }) => {
   return (
     <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
+      {/* Visual Decor per UI look */}
+      <ThemeDecor screen="welcome" />
+
       {/* Top right Theme Switcher & Look Switcher */}
       <div className="absolute top-4 right-4 z-30 flex items-center gap-2">
         <UISwitchButton />

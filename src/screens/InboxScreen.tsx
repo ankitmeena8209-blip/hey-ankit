@@ -13,6 +13,7 @@ import { AdminUnsentLog } from './AdminUnsentLog';
 import { ChatScreen } from './ChatScreen';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { UISwitchButton } from '../components/UISwitchButton';
+import { ThemeDecor } from '../components/decor/ThemeDecor';
 import {
   Search,
   MessageSquare,
@@ -236,6 +237,9 @@ export const InboxScreen: React.FC<InboxScreenProps> = ({ initialConversationId 
 
   return (
     <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
+      {/* Visual Decor per UI look */}
+      <ThemeDecor screen="inbox" />
+
       {/* Top Tide Liquid Wave Header */}
       <Tide screen="admin" scrollProgress={scrollProgress}>
         <div className="absolute left-4 right-4 top-3 flex flex-col">

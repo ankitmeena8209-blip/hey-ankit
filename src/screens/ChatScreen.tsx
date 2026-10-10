@@ -11,6 +11,7 @@ import { MessageBubble } from '../components/MessageBubble';
 import { ImageModal } from '../components/ImageModal';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { UISwitchButton } from '../components/UISwitchButton';
+import { ThemeDecor } from '../components/decor/ThemeDecor';
 import { UserAvatar } from '../components/UserAvatar';
 import { formatChatDate, getDisplayName } from '../lib/utils';
 import { ArrowLeft, Loader2, Bell, BellOff } from 'lucide-react';
@@ -481,6 +482,9 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
 
   return (
     <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
+      {/* Visual Decor per UI look */}
+      <ThemeDecor screen="chat" />
+
       {/* Top Tide Header with Scroll Link */}
       <Tide screen="chat" scrollProgress={scrollProgress}>
         <div className="absolute left-3.5 right-3.5 top-3 flex items-center gap-2.5 h-12">

@@ -160,6 +160,18 @@ html, body {
   will-change: transform;
 }
 
+@keyframes bob {
+  to {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes tw {
+  to {
+    transform: rotate(45deg) scale(0.7);
+  }
+}
+
 /* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 4px;
@@ -191,6 +203,20 @@ html, body {
 }
 .theme-btn:active {
   transform: scale(0.92);
+}
+
+/* Low-end hardware optimizations */
+:root[data-lite] .animate-sway-1,
+:root[data-lite] .animate-sway-2,
+:root[data-lite] .animate-sway-3,
+:root[data-lite] [class*="animate-[bob"],
+:root[data-lite] [class*="animate-[tw"] {
+  animation: none !important;
+}
+
+:root[data-lite] * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 /* View transitions */
