@@ -134,4 +134,18 @@
     font-weight: var(--dw);
     letter-spacing: var(--dt);
   }
+
+  /* Tide Bar / Blob element */
+  .tide-bar {
+    position: absolute;
+    inset: var(--tin);
+    background: var(--hb);
+    border: var(--hbd);
+    border-radius: var(--tr);
+    box-shadow: var(--hsh);
+    -webkit-backdrop-filter: var(--hbl);
+    backdrop-filter: var(--hbl);
+    overflow: hidden;
+    transition: background 0.4s, border-color 0.4s, border-radius 0.4s;
+  }
 }

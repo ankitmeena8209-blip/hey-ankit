@@ -1,0 +1,189 @@
+/* ===== UI 2: Sapphire (ref 2 - Redesigned Royal Cobalt & Deep Peaked Sheet) ===== */
+:root[data-ui="sapphire"] {
+  --page: #bcd4ef;
+  --bg: linear-gradient(160deg, #cde1f6 0%, #eaf3fc 55%, #d3e5f8 100%);
+  --ink: #0b1f55;
+  --mu: #3d588f;
+  --ln: rgba(26, 111, 189, 0.2);
+
+  /* Header / Tide - Distinctive Crisp Royal Sapphire Floating Bar */
+  --hb: #11256b;
+  --hi: #ffffff;
+  --hbd: 1px solid rgba(74, 170, 240, 0.4);
+  --hbl: none;
+  --hsh: 0 14px 32px rgba(17, 37, 107, 0.28);
+  --tr: 24px;
+  --tin: 10px 10px 0 10px;
+  --wm: none;
+  --mk: 0px;
+  --edge: none;
+
+  /* Cards - Crisp architectural porcelain cards with sapphire border (Distinct from Rose glass) */
+  --cb: #ffffff;
+  --cbd: 1px solid rgba(26, 111, 189, 0.16);
+  --csh: 0 18px 40px rgba(17, 37, 107, 0.14), 0 2px 6px rgba(17, 37, 107, 0.06);
+  --cbl: none;
+  --cr: 26px;
+  --cp: 20px;
+
+  /* Form & Inputs */
+  --fl-bg: #f4f8fe;
+  --fl-bd: 1.5px solid rgba(26, 111, 189, 0.24);
+  --fl-sh: 0 2px 8px rgba(17, 37, 107, 0.06);
+  --fl-r: 16px;
+  --fl-ink: #0b1f55;
+  --fl-ph: #5a73a8;
+
+  /* Primary Button - Deep Cobalt with electric glow */
+  --bt-bg: #11256b;
+  --bt-ink: #ffffff;
+  --bt-sh: 0 12px 26px rgba(17, 37, 107, 0.35);
+  --bt-r: 18px;
+  --bt-bd: 0;
+
+  /* Ghost Button */
+  --gh-bg: #eaf3fd;
+  --gh-ink: #11256b;
+  --gh-bd: 1px solid rgba(26, 111, 189, 0.3);
+  --gh-sh: none;
+
+  /* Message Bubbles - Electric Cobalt Gradient */
+  --sn-bg: linear-gradient(135deg, #1a6fbd, #2279c9);
+  --sn-ink: #ffffff;
+  --sn-sh: 0 8px 20px rgba(26, 111, 189, 0.28);
+  --rc-bg: #ffffff;
+  --rc-ink: #0b1f55;
+  --rc-bd: 1px solid rgba(26, 111, 189, 0.16);
+  --rc-sh: 0 4px 14px rgba(17, 37, 107, 0.08);
+  --br: 20px;
+
+  /* Navigation Tabs - Royal Navy with Electric Cobalt Active Indicator */
+  --tb-bg: #11256b;
+  --tb-bd: 1px solid rgba(74, 170, 240, 0.25);
+  --tb-sh: 0 14px 32px rgba(17, 37, 107, 0.35);
+  --tb-ink: rgba(255, 255, 255, 0.72);
+  --tb-ind: linear-gradient(135deg, #1a6fbd, #2279c9);
+  --tb-indi: #ffffff;
+  --tb-r: 24px;
+  --tb-bl: none;
+
+  /* Composer - Solid Crisp Floating Bar */
+  --cm-bg: #ffffff;
+  --cm-bd: 1px solid rgba(26, 111, 189, 0.2);
+  --cm-sh: 0 14px 32px rgba(17, 37, 107, 0.16);
+  --cm-bl: none;
+  --cm-r: 26px;
+
+  /* Accents & Status */
+  --ok: #0b8a5f;
+  --bad: #c4264a;
+  --acc: #1a6fbd;
+  --pl-bg: #11256b;
+  --pl-bd: 0;
+  --px: #ff9aa8;
+  --pc: #5ee6a8;
+  --dis-bg: rgba(17, 37, 107, 0.12);
+  --dis-ink: #4a6499;
+
+  /* Surfaces & Avatars */
+  --hav-bg: #ffffff;
+  --hav-ink: #11256b;
+  --av-bg: #11256b;
+  --av-ink: #ffffff;
+  --pop: #f4f8ff;
+  --surface: #f4f8ff;
+  --meta-color: #11256b;
+
+  /* Typography - Crisp high-tech sans typography */
+  --fnt-d: Montserrat, 'Plus Jakarta Sans', system-ui, sans-serif;
+  --dw: 700;
+  --dt: -0.025em;
+  --fnt-b: 'Plus Jakarta Sans', Montserrat, system-ui, sans-serif;
+
+  /* Motion - Smooth slide-up with crisp architectural ease */
+  --sp: cubic-bezier(0.16, 1, 0.3, 1);
+  --press: scale(0.95);
+  --rise: translateY(30px);
+
+  /* Iconic Peaked Navy Bottom Sheet */
+  --rw-ink: #ffffff;
+  --rw-mu: rgba(255, 255, 255, 0.75);
+  --sht-bg: #11256b;
+  --sht-clip: polygon(0 22px, 34% 22px, 50% 0, 66% 22px, 100% 22px, 100% 100%, 0 100%);
+  --sht-mt: 140px;
+
+  --top-ink: #ffffff;
+  --pad-chat: 86px;
+  --pad-inbox: 38px;
+  --hc-top: 20px;
+  --hi-top: 20px;
+  --auth-top: 84px;
+  --blk-ink: #ffffff;
+  --blk-mu: rgba(255, 255, 255, 0.76);
+  --play-d: none;
+  --prim-d: flex;
+  --l1: #141416;
+  --l2: #222326;
+  --l3: #323438;
+}
+
+:root[data-ui="sapphire"][data-theme="dark"] {
+  --page: #06112a;
+  --bg: linear-gradient(160deg, #06112a 0%, #0c204c 60%, #071536 100%);
+  --ink: #e8f1ff;
+  --mu: #9db6e6;
+  --ln: rgba(74, 170, 240, 0.25);
+
+  --hb: #09173f;
+  --hi: #e8f1ff;
+  --hbd: 1px solid rgba(74, 170, 240, 0.3);
+
+  --cb: #0b1f55;
+  --cbd: 1px solid rgba(74, 170, 240, 0.25);
+  --csh: 0 18px 40px rgba(0, 0, 0, 0.5);
+
+  --fl-bg: #07163e;
+  --fl-bd: 1px solid rgba(74, 170, 240, 0.28);
+  --fl-ink: #e8f1ff;
+  --fl-ph: #9db6e6;
+
+  --bt-bg: #2279c9;
+  --bt-ink: #ffffff;
+  --bt-sh: 0 12px 28px rgba(34, 121, 201, 0.45);
+
+  --gh-bg: #07163e;
+  --gh-ink: #e8f1ff;
+  --gh-bd: 1px solid rgba(74, 170, 240, 0.3);
+
+  --sn-bg: linear-gradient(135deg, #2279c9, #4aaaf0);
+  --sn-ink: #ffffff;
+
+  --rc-bg: #0d2460;
+  --rc-ink: #e8f1ff;
+  --rc-bd: 1px solid rgba(74, 170, 240, 0.25);
+
+  --tb-bg: #081a4a;
+  --tb-bd: 1px solid rgba(74, 170, 240, 0.3);
+  --tb-ind: linear-gradient(135deg, #1a6fbd, #2279c9);
+
+  --cm-bg: #0b1f55;
+  --cm-bd: 1px solid rgba(74, 170, 240, 0.25);
+
+  --ok: #34d399;
+  --bad: #ff8fa3;
+  --acc: #5ab7f1;
+  --pl-bg: #06112a;
+  --dis-bg: rgba(255, 255, 255, 0.1);
+  --dis-ink: #9db6e6;
+
+  --hav-bg: #e8f1ff;
+  --hav-ink: #0b1f55;
+  --pop: #0b1f55;
+  --surface: #0b1f55;
+  --meta-color: #06112a;
+
+  --sht-bg: #071536;
+  --top-ink: #e8f1ff;
+  --blk-ink: #e8f1ff;
+  --blk-mu: rgba(255, 255, 255, 0.74);
+}

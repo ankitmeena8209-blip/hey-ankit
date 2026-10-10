@@ -569,7 +569,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       <div
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="flex-1 w-full overflow-y-auto px-3.5 pt-[104px] pb-[84px] flex flex-col gap-1.5"
+        className="flex-1 w-full overflow-y-auto px-3.5 pt-[var(--pad-chat)] pb-[84px] flex flex-col gap-1.5"
       >
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center text-muted gap-2">

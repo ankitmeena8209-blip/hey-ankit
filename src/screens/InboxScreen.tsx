@@ -331,11 +331,15 @@ export const InboxScreen: React.FC<InboxScreenProps> = ({ initialConversationId 
         </div>
       </Tide>
 
-      {/* Main Tab Content */}
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col pt-[156px] pb-[80px]"
+        className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col pt-[var(--pad-inbox)] pb-[80px]"
+        style={{
+          marginTop: 'var(--sht-mt)',
+          background: 'var(--sht-bg)',
+          clipPath: 'var(--sht-clip)',
+        }}
       >
         {/* TAB 1: CHATS */}
         {activeTab === 'chats' && (

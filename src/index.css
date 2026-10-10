@@ -1,4 +1,6 @@
 @import "./styles/ui/default.css";
+@import "./styles/ui/rose.css";
+@import "./styles/ui/sapphire.css";
 @import "./styles/ui-components.css";
 
 @tailwind base;

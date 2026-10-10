@@ -1,0 +1,194 @@
+/* ===== UI 1: Rose Glass (ref 1) ===== */
+:root[data-ui="rose"] {
+  --page: #d9a1ad;
+  --bg: linear-gradient(180deg, #e58a9b 0%, #f0b3bb 38%, #f3c9c0 62%, #e8ab94 100%);
+  --ink: #2b1a20;
+  --mu: rgba(43, 26, 32, 0.68);
+  --ln: rgba(255, 255, 255, 0.55);
+
+  /* Header / Tide - Frosted floating glass bar */
+  --hb: rgba(255, 255, 255, 0.32);
+  --hi: #2b1a20;
+  --hbd: 1px solid rgba(255, 255, 255, 0.65);
+  --hbl: blur(18px) saturate(1.4);
+  --hsh: 0 10px 24px rgba(120, 40, 60, 0.12);
+  --tr: 22px;
+  --tin: 10px 10px 0 10px;
+  --wm: none;
+  --mk: 0px;
+  --edge: none;
+
+  /* Cards / Modals - Frosted Glass with glossy top edge */
+  --cb: rgba(255, 255, 255, 0.3);
+  --cbd: 1px solid rgba(255, 255, 255, 0.65);
+  --csh: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 18px 40px rgba(120, 40, 60, 0.18);
+  --cbl: blur(20px) saturate(1.4);
+  --cr: 26px;
+  --cp: 18px;
+
+  /* Form & Inputs */
+  --fl-bg: rgba(255, 255, 255, 0.5);
+  --fl-bd: 1px solid rgba(255, 255, 255, 0.75);
+  --fl-sh: none;
+  --fl-r: 22px;
+  --fl-ink: #2b1a20;
+  --fl-ph: rgba(43, 26, 32, 0.6);
+
+  /* Primary Button - Glossy Dark Pill */
+  --bt-bg: #1c1b1d;
+  --bt-ink: #ffffff;
+  --bt-sh: 0 10px 22px rgba(0, 0, 0, 0.25);
+  --bt-r: 999px;
+  --bt-bd: 0;
+
+  /* Ghost Button */
+  --gh-bg: rgba(255, 255, 255, 0.55);
+  --gh-ink: #2b1a20;
+  --gh-bd: 1px solid rgba(255, 255, 255, 0.75);
+  --gh-sh: none;
+
+  /* Message Bubbles */
+  --sn-bg: #1c1b1d;
+  --sn-ink: #ffffff;
+  --sn-sh: 0 6px 16px rgba(0, 0, 0, 0.2);
+  --rc-bg: rgba(255, 255, 255, 0.62);
+  --rc-ink: #2b1a20;
+  --rc-bd: 1px solid rgba(255, 255, 255, 0.75);
+  --rc-sh: none;
+  --br: 20px;
+
+  /* Navigation Tabs */
+  --tb-bg: rgba(255, 255, 255, 0.38);
+  --tb-bd: 1px solid rgba(255, 255, 255, 0.7);
+  --tb-sh: 0 12px 28px rgba(120, 40, 60, 0.18);
+  --tb-ink: rgba(43, 26, 32, 0.75);
+  --tb-ind: #1c1b1d;
+  --tb-indi: #ffffff;
+  --tb-r: 23px;
+  --tb-bl: blur(16px);
+
+  /* Composer */
+  --cm-bg: rgba(255, 255, 255, 0.42);
+  --cm-bd: 1px solid rgba(255, 255, 255, 0.7);
+  --cm-sh: 0 12px 28px rgba(120, 40, 60, 0.18);
+  --cm-bl: blur(16px);
+  --cm-r: 26px;
+
+  /* Status and Accents */
+  --ok: #0b8a5f;
+  --bad: #c4264a;
+  --acc: #1c1b1d;
+  --pl-bg: rgba(255, 255, 255, 0.55);
+  --pl-bd: 1px solid rgba(255, 255, 255, 0.8);
+  --px: #c4264a;
+  --pc: #0b8a5f;
+  --dis-bg: rgba(255, 255, 255, 0.35);
+  --dis-ink: rgba(43, 26, 32, 0.6);
+
+  /* Surfaces & Avatars */
+  --hav-bg: #1c1b1d;
+  --hav-ink: #ffffff;
+  --av-bg: #1c1b1d;
+  --av-ink: #ffffff;
+  --pop: #fbe9eb;
+  --surface: #fbe9eb;
+  --meta-color: #d9a1ad;
+
+  /* Typography - Refined Poppins for elegant, crystal-clear readability */
+  --fnt-d: Poppins, system-ui, sans-serif;
+  --dw: 500;
+  --dt: -0.02em;
+  --fnt-b: Poppins, system-ui, sans-serif;
+
+  /* Motion - Floaty, gentle ease, zero overshoot */
+  --sp: cubic-bezier(0.22, 1, 0.36, 1);
+  --press: scale(0.96);
+  --rise: translateY(24px) scale(0.98);
+
+  /* Layout Insets */
+  --rw-ink: #2b1a20;
+  --rw-mu: rgba(43, 26, 32, 0.68);
+  --sht-bg: transparent;
+  --sht-clip: none;
+  --sht-mt: 0px;
+  --top-ink: #2b1a20;
+  --pad-chat: 86px;
+  --pad-inbox: 140px;
+  --hc-top: 20px;
+  --hi-top: 20px;
+  --auth-top: 84px;
+  --blk-ink: #2b1a20;
+  --blk-mu: rgba(43, 26, 32, 0.68);
+  --play-d: none;
+  --prim-d: flex;
+  --l1: #141416;
+  --l2: #222326;
+  --l3: #323438;
+}
+
+:root[data-ui="rose"][data-theme="dark"] {
+  --page: #3b1a28;
+  --bg: linear-gradient(180deg, #3b1a28, #5a2a3a 45%, #4a2a2e);
+  --ink: #fdeff2;
+  --mu: rgba(253, 239, 242, 0.72);
+  --ln: rgba(255, 255, 255, 0.2);
+
+  --hb: rgba(255, 255, 255, 0.1);
+  --hi: #fdeff2;
+  --hbd: 1px solid rgba(255, 255, 255, 0.2);
+
+  --cb: rgba(255, 255, 255, 0.1);
+  --cbd: 1px solid rgba(255, 255, 255, 0.2);
+
+  --fl-bg: rgba(255, 255, 255, 0.1);
+  --fl-bd: 1px solid rgba(255, 255, 255, 0.2);
+  --fl-ink: #fdeff2;
+  --fl-ph: rgba(253, 239, 242, 0.62);
+
+  --bt-bg: #fdeff2;
+  --bt-ink: #1c1b1d;
+
+  --gh-bg: rgba(255, 255, 255, 0.1);
+  --gh-ink: #fdeff2;
+  --gh-bd: 1px solid rgba(255, 255, 255, 0.22);
+
+  --sn-bg: #fdeff2;
+  --sn-ink: #1c1b1d;
+
+  --rc-bg: rgba(255, 255, 255, 0.12);
+  --rc-ink: #fdeff2;
+  --rc-bd: 1px solid rgba(255, 255, 255, 0.2);
+
+  --tb-bg: rgba(255, 255, 255, 0.1);
+  --tb-bd: 1px solid rgba(255, 255, 255, 0.2);
+  --tb-ink: rgba(253, 239, 242, 0.75);
+  --tb-ind: #fdeff2;
+  --tb-indi: #1c1b1d;
+
+  --cm-bg: rgba(255, 255, 255, 0.1);
+  --cm-bd: 1px solid rgba(255, 255, 255, 0.2);
+
+  --ok: #34d399;
+  --bad: #ff8fa3;
+  --acc: #fdeff2;
+  --pl-bg: rgba(255, 255, 255, 0.12);
+  --pl-bd: 1px solid rgba(255, 255, 255, 0.22);
+  --px: #ff8fa3;
+  --pc: #34d399;
+  --dis-bg: rgba(255, 255, 255, 0.12);
+  --dis-ink: rgba(253, 239, 242, 0.6);
+
+  --hav-bg: #fdeff2;
+  --hav-ink: #1c1b1d;
+  --av-bg: #fdeff2;
+  --av-ink: #1c1b1d;
+  --pop: #4a2433;
+  --surface: #4a2433;
+  --meta-color: #3b1a28;
+
+  --rw-ink: #fdeff2;
+  --rw-mu: rgba(253, 239, 242, 0.72);
+  --top-ink: #fdeff2;
+  --blk-ink: #fdeff2;
+  --blk-mu: rgba(253, 239, 242, 0.72);
+}
