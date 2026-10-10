@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MotionConfig } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
-import { UIThemeProvider } from './context/UIThemeContext';
+import { UIThemeProvider, useUITheme } from './context/UIThemeContext';
 import { PresenceProvider } from './context/PresenceContext';
 import { isSupabaseConfigured } from './lib/supabase';
 import { SetupBanner } from './components/SetupBanner';
@@ -14,8 +14,16 @@ import { Loader2 } from 'lucide-react';
 
 const MainRouter: React.FC = () => {
   const { user, profile, loading } = useAuth();
+  const { syncProfileTheme } = useUITheme();
   const [authMode, setAuthMode] = useState<'signup' | 'login' | null>(null);
   const [initialConvId, setInitialConvId] = useState<string | null>(null);
+
+  // Sync profile UI theme on login without blocking network
+  useEffect(() => {
+    if (profile?.ui_theme) {
+      syncProfileTheme(profile.ui_theme);
+    }
+  }, [profile?.ui_theme, syncProfileTheme]);
 
   // Check URL query parameters or service worker messages for target conversation
   useEffect(() => {

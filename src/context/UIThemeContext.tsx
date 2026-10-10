@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { flushSync } from 'react-dom';
+import { supabase } from '../lib/supabase';
 import type { UIThemeId, UIThemeDefinition } from '../theme/uiThemes';
 import {
   UI_THEMES,
@@ -17,6 +18,7 @@ interface UIThemeContextType {
   themeDef: UIThemeDefinition;
   cycleUI: (origin?: OriginCoords) => void;
   setUI: (id: UIThemeId, origin?: OriginCoords) => void;
+  syncProfileTheme: (profileTheme?: string | null) => void;
   toastMessage: string | null;
 }
 
@@ -173,8 +175,35 @@ export const UIThemeProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setUiState(newId);
         applyDOMAttributes(newId);
       }
+
+      // Fire-and-forget background sync to Supabase RPC if user is authenticated
+      try {
+        Promise.resolve(supabase.rpc('set_ui_theme', { p_theme: newId })).catch(() => {});
+      } catch {
+        // ignore network/auth errors
+      }
     },
     [applyDOMAttributes, showToast]
+  );
+
+  const syncProfileTheme = useCallback(
+    (profileTheme?: string | null) => {
+      if (profileTheme && UI_THEMES.some((t) => t.id === profileTheme)) {
+        setUiState((current) => {
+          if (current !== profileTheme) {
+            try {
+              localStorage.setItem(STORAGE_KEY, profileTheme);
+            } catch {
+              // ignore
+            }
+            applyDOMAttributes(profileTheme as UIThemeId);
+            return profileTheme as UIThemeId;
+          }
+          return current;
+        });
+      }
+    },
+    [applyDOMAttributes]
   );
 
   const cycleUI = useCallback(
@@ -195,7 +224,7 @@ export const UIThemeProvider: React.FC<{ children: React.ReactNode }> = ({ child
   );
 
   return (
-    <UIThemeContext.Provider value={{ ui, themeDef, cycleUI, setUI, toastMessage }}>
+    <UIThemeContext.Provider value={{ ui, themeDef, cycleUI, setUI, syncProfileTheme, toastMessage }}>
       {children}
       {/* Toast pill */}
       {toastMessage && (
