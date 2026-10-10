@@ -106,3 +106,29 @@ export const getNextTheme = (currentId: UIThemeId): UIThemeDefinition => {
   const nextIndex = (currentIndex + 1) % UI_THEMES.length;
   return UI_THEMES[nextIndex];
 };
+
+export const motionPresets: Record<UIThemeId, MotionPreset> = {
+  default: { type: 'spring', stiffness: 260, damping: 18 },
+  rose: { type: 'tween', ease: [0.22, 1, 0.36, 1], duration: 0.9 },
+  sapphire: { type: 'tween', ease: [0.16, 1, 0.3, 1], duration: 0.75 },
+  lime: { type: 'spring', stiffness: 420, damping: 14 },
+  clay: { type: 'spring', stiffness: 300, damping: 12 },
+  kawaii: { type: 'spring', stiffness: 520, damping: 15 },
+};
+
+export const getFramerTransition = (preset: MotionPreset, delay = 0) => {
+  if (preset.type === 'spring') {
+    return {
+      type: 'spring' as const,
+      stiffness: preset.stiffness ?? 260,
+      damping: preset.damping ?? 18,
+      delay,
+    };
+  }
+  return {
+    duration: preset.duration ?? 0.75,
+    ease: preset.ease ?? [0.22, 1, 0.36, 1],
+    delay,
+  };
+};
+

@@ -8,6 +8,8 @@ import { ValidationPill } from '../components/ValidationPill';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { UISwitchButton } from '../components/UISwitchButton';
 import { ThemeDecor } from '../components/decor/ThemeDecor';
+import { useUITheme } from '../context/UIThemeContext';
+import { getFramerTransition } from '../theme/uiThemes';
 import { validateUsername } from '../lib/utils';
 
 interface AuthScreenProps {
@@ -18,6 +20,7 @@ interface AuthScreenProps {
 export const AuthScreen: React.FC<AuthScreenProps> = ({
   initialMode = 'signup',
 }) => {
+  const { themeDef } = useUITheme();
   const { login, register } = useAuth();
   const [mode, setMode] = useState<'signup' | 'login'>(initialMode);
   const [username, setUsername] = useState('');
@@ -104,10 +107,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       <Tide screen="auth">
         <div className="absolute left-6 top-10 flex items-center">
           <motion.h2
-            key={mode}
+            key={`${mode}-${themeDef.id}`}
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-display text-[34px] leading-none text-white tracking-wide"
+            transition={getFramerTransition(themeDef.motionPreset, 0.1)}
+            className="font-display text-[34px] leading-none text-[var(--top-ink)] tracking-wide"
           >
             {mode === 'signup' ? 'Sign up' : 'Log in'}
           </motion.h2>

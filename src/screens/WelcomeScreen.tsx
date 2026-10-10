@@ -4,6 +4,8 @@ import { Tide } from '../components/Tide';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { UISwitchButton } from '../components/UISwitchButton';
 import { ThemeDecor } from '../components/decor/ThemeDecor';
+import { useUITheme } from '../context/UIThemeContext';
+import { getFramerTransition } from '../theme/uiThemes';
 import { ArrowRight } from 'lucide-react';
 
 interface WelcomeScreenProps {
@@ -12,6 +14,8 @@ interface WelcomeScreenProps {
 }
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGoSignup, onGoLogin }) => {
+  const { themeDef } = useUITheme();
+
   return (
     <div className="relative h-dvh w-full max-w-md mx-auto bg-surface flex flex-col justify-between overflow-hidden select-none">
       {/* Visual Decor per UI look */}
@@ -29,9 +33,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGoSignup, onGoLo
       {/* Main bottom section below wave */}
       <div className="relative z-10 mt-auto px-6 pb-7 pt-3 flex flex-col gap-2.5">
         <motion.div
+          key={`title-${themeDef.id}`}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.25, ease: [0.2, 1.35, 0.4, 1] }}
+          transition={getFramerTransition(themeDef.motionPreset, 0.25)}
         >
           <h1 className="font-display text-[46px] leading-tight text-ink tracking-tight">
             Linksy
@@ -39,18 +44,20 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGoSignup, onGoLo
         </motion.div>
 
         <motion.p
+          key={`sub-${themeDef.id}`}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.35, ease: [0.2, 1.35, 0.4, 1] }}
+          transition={getFramerTransition(themeDef.motionPreset, 0.35)}
           className="text-[13px] font-medium text-muted mb-2"
         >
           Connect. Chat. Belong.
         </motion.p>
 
         <motion.div
+          key={`actions-${themeDef.id}`}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.45, ease: [0.2, 1.35, 0.4, 1] }}
+          transition={getFramerTransition(themeDef.motionPreset, 0.45)}
           className="flex items-center justify-between gap-3 pt-1"
         >
           <motion.button
