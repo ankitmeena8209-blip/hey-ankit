@@ -34,16 +34,16 @@ export const AdminInbox: React.FC = () => {
   const handleToggleNotification = async () => {
     if (notifPerm === 'granted') {
       sendHeyAnkitNotification({
-        senderName: 'Hey Ankit',
+        senderName: 'Linksy',
         preview: 'Branded notifications are active!',
       });
       return;
     }
-    const perm = await requestNotificationPermission();
-    setNotifPerm(perm);
-    if (perm === 'granted') {
+    const { permission } = await requestNotificationPermission();
+    setNotifPerm(permission);
+    if (permission === 'granted') {
       sendHeyAnkitNotification({
-        senderName: 'Hey Ankit',
+        senderName: 'Linksy',
         preview: 'Branded notifications enabled!',
       });
     }

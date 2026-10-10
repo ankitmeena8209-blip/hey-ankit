@@ -5,6 +5,9 @@ export type MessageType = 'text' | 'image';
 export interface Profile {
   id: string;
   username: string;
+  display_name?: string | null;
+  avatar_url?: string | null;
+  bio?: string | null;
   role: UserRole;
   status: UserStatus;
   created_at: string;
@@ -14,12 +17,15 @@ export interface Profile {
 export interface Conversation {
   id: string;
   user_id: string;
-  admin_id: string | null;
+  recipient_id?: string | null;
+  admin_id?: string | null;
   created_at: string;
   updated_at: string;
-  // Joined profile data when fetched by admin
+  // Joined profile data
   user?: Profile;
+  recipient?: Profile;
   admin?: Profile;
+  other_user?: Profile; // Helper for current user's chat partner
   last_message?: Message | null;
   unread_count?: number;
 }
@@ -36,6 +42,8 @@ export interface Message {
   read_at: string | null;
   is_one_time?: boolean;
   viewed_by?: string[] | null;
+  // Joined sender profile
+  sender?: Profile;
   // Local state for optimistic updates / signed URL
   signed_url?: string;
   is_optimistic?: boolean;
@@ -99,3 +107,4 @@ export interface Database {
     };
   };
 }
+

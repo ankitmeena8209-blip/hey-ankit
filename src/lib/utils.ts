@@ -240,3 +240,34 @@ export async function getSignedImageUrl(imagePath: string): Promise<string | nul
     return null;
   }
 }
+
+// Curated palette of avatar background gradients for users without pictures
+const AVATAR_PALETTES = [
+  'from-teal-500 to-emerald-600',
+  'from-cyan-500 to-blue-600',
+  'from-indigo-500 to-purple-600',
+  'from-violet-500 to-fuchsia-600',
+  'from-rose-500 to-pink-600',
+  'from-amber-500 to-orange-600',
+  'from-emerald-500 to-teal-700',
+  'from-sky-500 to-indigo-600',
+];
+
+export function getAvatarColor(identifier: string): string {
+  if (!identifier) return AVATAR_PALETTES[0];
+  let hash = 0;
+  for (let i = 0; i < identifier.length; i++) {
+    hash = identifier.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % AVATAR_PALETTES.length;
+  return AVATAR_PALETTES[index];
+}
+
+export function getDisplayName(profile?: { display_name?: string | null; username: string } | null): string {
+  if (!profile) return 'User';
+  if (profile.display_name && profile.display_name.trim()) {
+    return profile.display_name.trim();
+  }
+  return profile.username;
+}
+

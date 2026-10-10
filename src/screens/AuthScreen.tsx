@@ -19,6 +19,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
   const { login, register } = useAuth();
   const [mode, setMode] = useState<'signup' | 'login'>(initialMode);
   const [username, setUsername] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -48,7 +49,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
     try {
       if (mode === 'signup') {
-        const res = await register(username, password);
+        const res = await register(username, password, displayName);
         if (!res.success) {
           setServerError(res.error ?? 'Registration failed.');
         }
@@ -79,6 +80,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
   const handlePrankSwitchToSignup = () => {
     setShowHackerPrank(false);
     setUsername('');
+    setDisplayName('');
     setPassword('');
     setConfirmPassword('');
     setMode('signup');
@@ -109,6 +111,25 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       {/* Main Form Area */}
       <div className="relative z-10 flex-1 px-6 pt-[156px] pb-5 flex flex-col justify-between overflow-y-auto">
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          {/* Display Name Field (Optional for signup) */}
+          {mode === 'signup' && (
+            <div className="flex flex-col">
+              <label htmlFor="dn-input" className="text-[12px] font-semibold text-ink mb-1">
+                Display Name <span className="text-muted font-normal">(Optional)</span>
+              </label>
+              <input
+                id="dn-input"
+                type="text"
+                autoComplete="name"
+                maxLength={30}
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                className="w-full h-11 rounded-xl bg-field shadow-neu-inset px-3.5 text-[14px] text-ink outline-none border border-line/40 focus:border-ink/50 transition-all placeholder:text-muted/60"
+                placeholder="e.g. Alex Rivera"
+              />
+            </div>
+          )}
+
           {/* Username Field */}
           <div className="flex flex-col">
             <label htmlFor="u-input" className="text-[12px] font-semibold text-ink mb-1">
@@ -130,7 +151,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                     setServerError(null);
                   }}
                   className="w-full h-11 rounded-xl bg-field shadow-neu-inset px-3.5 text-[14px] text-ink outline-none border border-line/40 focus:border-ink/50 transition-all placeholder:text-muted/60"
-                  placeholder="e.g. being_frzi"
+                  placeholder="e.g. alex_rivera"
                 />
               </div>
               <ValidationPill isValid={isUsernameValid} label="Username" />
@@ -143,6 +164,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
               3–20 letters, numbers or _
             </small>
           </div>
+
 
           {/* Password Field */}
           <div className="flex flex-col">
@@ -265,9 +287,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 <span>Checking…</span>
               </>
             ) : (
-              <span>{mode === 'signup' ? 'Confirm' : 'Log in'}</span>
+              <span>{mode === 'signup' ? 'Create Account' : 'Log in'}</span>
             )}
           </motion.button>
+
+          <footer className="w-full text-center pt-1.5 pb-0.5 text-[10px] text-muted/75">
+            Linksy — by FRZI TOOLS • © 2026 FRZI TOOLS. All rights reserved.
+          </footer>
         </div>
       </div>
 

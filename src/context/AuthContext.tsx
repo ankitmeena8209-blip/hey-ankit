@@ -11,9 +11,10 @@ interface AuthContextType {
   isAdmin: boolean;
   loading: boolean;
   login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (username: string, password: string, displayName?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  updateProfile: (updates: Partial<Profile>) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,6 +48,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setProfile({
           id: userId,
           username: cleanUsername,
+          display_name: targetUser?.user_metadata?.display_name || null,
+          avatar_url: targetUser?.user_metadata?.avatar_url || null,
+          bio: targetUser?.user_metadata?.bio || null,
           role: isAdminUser ? 'admin' : 'user',
           status: 'active',
           created_at: new Date().toISOString(),
@@ -57,6 +61,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setProfile({
         id: userId,
         username: cleanUsername,
+        display_name: targetUser?.user_metadata?.display_name || null,
+        avatar_url: targetUser?.user_metadata?.avatar_url || null,
+        bio: targetUser?.user_metadata?.bio || null,
         role: isAdminUser ? 'admin' : 'user',
         status: 'active',
         created_at: new Date().toISOString(),
@@ -70,6 +77,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await fetchProfile(user.id, user);
     }
   }, [user, fetchProfile]);
+
+  const updateProfile = async (updates: Partial<Profile>): Promise<{ success: boolean; error?: string }> => {
+    if (!user?.id) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    try {
+      // 1. Update user metadata in Supabase Auth
+      await supabase.auth.updateUser({
+        data: {
+          display_name: updates.display_name,
+          avatar_url: updates.avatar_url,
+          bio: updates.bio,
+        },
+      });
+
+      // 2. Update profiles table
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          display_name: updates.display_name,
+          avatar_url: updates.avatar_url,
+          bio: updates.bio,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        console.warn('Profile table update note:', error.message);
+      }
+
+      setProfile((prev) => (prev ? { ...prev, ...updates } : null));
+      return { success: true };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to update profile.';
+      return { success: false, error: msg };
+    }
+  };
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -164,7 +209,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const register = async (
+    username: string,
+    password: string,
+    displayName?: string
+  ): Promise<{ success: boolean; error?: string }> => {
     const validCheck = validateUsername(username);
     if (!validCheck.valid) {
       return { success: false, error: validCheck.error };
@@ -184,6 +233,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         options: {
           data: {
             username: cleanUsername,
+            display_name: displayName?.trim() || cleanUsername,
           },
         },
       });
@@ -264,6 +314,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         logout,
         refreshProfile,
+        updateProfile,
       }}
     >
       {children}

@@ -5,15 +5,39 @@ import { ThemeProvider } from './context/ThemeContext';
 import { PresenceProvider } from './context/PresenceContext';
 import { isSupabaseConfigured } from './lib/supabase';
 import { SetupBanner } from './components/SetupBanner';
+import { InAppToast } from './components/InAppToast';
 import { WelcomeScreen } from './screens/WelcomeScreen';
 import { AuthScreen } from './screens/AuthScreen';
-import { ChatScreen } from './screens/ChatScreen';
-import { AdminInbox } from './screens/AdminInbox';
+import { InboxScreen } from './screens/InboxScreen';
 import { Loader2 } from 'lucide-react';
 
 const MainRouter: React.FC = () => {
-  const { user, profile, isAdmin, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const [authMode, setAuthMode] = useState<'signup' | 'login' | null>(null);
+  const [initialConvId, setInitialConvId] = useState<string | null>(null);
+
+  // Check URL query parameters or service worker messages for target conversation
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const convParam = urlParams.get('conv');
+      if (convParam) {
+        setInitialConvId(convParam);
+      }
+
+      // Listen for message from service worker notification click
+      const handleSwMessage = (event: MessageEvent) => {
+        if (event.data?.type === 'LINKSY_OPEN_CONVERSATION' && event.data?.conversationId) {
+          setInitialConvId(event.data.conversationId);
+        }
+      };
+
+      navigator.serviceWorker?.addEventListener('message', handleSwMessage);
+      return () => {
+        navigator.serviceWorker?.removeEventListener('message', handleSwMessage);
+      };
+    }
+  }, []);
 
   // Mobile visualViewport resize handling to keep composer above software keyboard
   useEffect(() => {
@@ -39,11 +63,14 @@ const MainRouter: React.FC = () => {
   if (loading) {
     return (
       <div className="h-dvh w-full bg-surface flex flex-col items-center justify-center text-ink gap-3 select-none">
-        <div className="flex items-center gap-2 text-ink">
-          <Loader2 className="w-5 h-5 animate-spin text-muted" />
-          <span className="font-display text-2xl tracking-wide text-ink">
-            Hey Ankit
-          </span>
+        <div className="flex flex-col items-center gap-2 text-ink">
+          <div className="flex items-center gap-2">
+            <Loader2 className="w-5 h-5 animate-spin text-muted" />
+            <span className="font-display text-2xl tracking-wide text-ink">
+              Linksy
+            </span>
+          </div>
+          <span className="text-[11px] text-muted font-medium">by FRZI TOOLS</span>
         </div>
       </div>
     );
@@ -67,13 +94,13 @@ const MainRouter: React.FC = () => {
     );
   }
 
-  // Admin lands on Admin Inbox (Chats, Users, Unsent Log)
-  if (isAdmin) {
-    return <AdminInbox />;
-  }
-
-  // Friend lands directly in 1:1 private chat with Ankit
-  return <ChatScreen />;
+  // Authenticated: Unified multi-user inbox & messaging screen
+  return (
+    <>
+      <InAppToast onSelectConversation={(convId) => setInitialConvId(convId)} />
+      <InboxScreen initialConversationId={initialConvId} />
+    </>
+  );
 };
 
 export default function App() {
@@ -93,4 +120,3 @@ export default function App() {
     </ThemeProvider>
   );
 }
-

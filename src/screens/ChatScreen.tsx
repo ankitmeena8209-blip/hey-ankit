@@ -4,16 +4,17 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { usePresence } from '../context/PresenceContext';
-import type { Message, Conversation } from '../types/database';
+import type { Message, Conversation, Profile } from '../types/database';
 import { Tide } from '../components/Tide';
 import { WaveComposer } from '../components/WaveComposer';
 import { MessageBubble } from '../components/MessageBubble';
 import { ImageModal } from '../components/ImageModal';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { formatChatDate, getInitials } from '../lib/utils';
+import { UserAvatar } from '../components/UserAvatar';
+import { formatChatDate, getDisplayName } from '../lib/utils';
 import { ArrowLeft, Loader2, Bell, BellOff } from 'lucide-react';
 import {
-  sendHeyAnkitNotification,
+  sendLinksyNotification,
   requestNotificationPermission,
   isNotificationSupported,
   getNotificationPermission,
@@ -32,9 +33,10 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
   partnerUsername: propPartnerUsername,
   onBack,
 }) => {
-  const { user, profile, isAdmin, logout } = useAuth();
+  const { user, profile, logout } = useAuth();
   const { isUserOnline } = usePresence();
   const [conversation, setConversation] = useState<Conversation | null>(null);
+  const [partnerProfile, setPartnerProfile] = useState<Partial<Profile> | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(false);
@@ -51,23 +53,23 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
 
   const handleToggleNotification = async () => {
     if (notifPerm === 'granted') {
-      sendHeyAnkitNotification({
-        senderName: 'Hey Ankit',
-        preview: 'Branded notifications are active!',
+      sendLinksyNotification({
+        senderName: 'Linksy',
+        preview: 'Notifications are active and sound is enabled!',
       });
       return;
     }
-    const perm = await requestNotificationPermission();
-    setNotifPerm(perm);
-    if (perm === 'granted') {
-      sendHeyAnkitNotification({
-        senderName: 'Hey Ankit',
-        preview: 'Branded notifications enabled!',
+    const { permission } = await requestNotificationPermission();
+    setNotifPerm(permission);
+    if (permission === 'granted') {
+      sendLinksyNotification({
+        senderName: 'Linksy',
+        preview: 'Branded notifications enabled for Linksy!',
       });
     }
   };
 
-  // 1. Resolve or create conversation
+  // 1. Resolve conversation and partner profile
   useEffect(() => {
     let isMounted = true;
 
@@ -77,12 +79,45 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
         if (propConversationId) {
           const { data, error } = await supabase
             .from('conversations')
-            .select('*, user:profiles!conversations_user_id_fkey(*)')
+            .select(`
+              *,
+              user:profiles!conversations_user_id_fkey(*),
+              recipient:profiles!conversations_recipient_id_fkey(*),
+              admin:profiles!conversations_admin_id_fkey(*)
+            `)
             .eq('id', propConversationId)
             .single();
 
           if (!error && data && isMounted) {
-            setConversation(data as Conversation);
+            const conv = data as unknown as Conversation;
+            setConversation(conv);
+
+            // Determine other participant
+            const other =
+              conv.user_id === user?.id
+                ? conv.recipient || conv.admin || null
+                : conv.user || null;
+
+            if (other) {
+              setPartnerProfile(other);
+            } else {
+              // Fallback query partner profile
+              const targetId =
+                conv.user_id === user?.id
+                  ? conv.recipient_id || conv.admin_id
+                  : conv.user_id;
+
+              if (targetId) {
+                const { data: pData } = await supabase
+                  .from('profiles')
+                  .select('*')
+                  .eq('id', targetId)
+                  .maybeSingle();
+                if (pData && isMounted) {
+                  setPartnerProfile(pData as Profile);
+                }
+              }
+            }
           }
         } else {
           const { data, error } = await supabase.rpc('get_or_create_my_conversation');
@@ -101,16 +136,19 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [propConversationId]);
+  }, [propConversationId, user?.id]);
 
-  const partnerId = isAdmin ? conversation?.user_id : conversation?.admin_id;
+  const partnerId = conversation
+    ? conversation.user_id === user?.id
+      ? conversation.recipient_id || conversation.admin_id
+      : conversation.user_id
+    : null;
+
   const isPartnerOnline = partnerId ? isUserOnline(partnerId) : false;
 
-  const partnerName = propPartnerUsername
-    ? propPartnerUsername
-    : isAdmin
-    ? conversation?.user?.username ?? 'Friend'
-    : 'Ankit';
+  const partnerDisplayName = partnerProfile
+    ? getDisplayName(partnerProfile as Profile)
+    : propPartnerUsername || 'Chat';
 
   // 2. Mark messages read
   const markRead = useCallback(async (convId: string) => {
@@ -231,8 +269,9 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
 
             if (newMsg.sender_id !== user?.id) {
               if (document.hidden) {
-                sendHeyAnkitNotification({
-                  senderName: partnerName,
+                sendLinksyNotification({
+                  senderName: partnerDisplayName,
+                  senderAvatar: partnerProfile?.avatar_url,
                   preview:
                     newMsg.type === 'image'
                       ? '📷 Sent a photo'
@@ -288,7 +327,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       }
       channel.unsubscribe();
     };
-  }, [conversation?.id, loadMessages, markRead, user?.id, partnerName]);
+  }, [conversation?.id, loadMessages, markRead, user?.id, partnerDisplayName, partnerProfile?.avatar_url]);
 
   const scrollRafRef = useRef<number | null>(null);
 
@@ -444,7 +483,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       {/* Top Tide Header with Scroll Link */}
       <Tide screen="chat" scrollProgress={scrollProgress}>
         <div className="absolute left-3.5 right-3.5 top-3 flex items-center gap-2.5 h-12">
-          {isAdmin && onBack && (
+          {onBack && (
             <motion.button
               type="button"
               whileTap={{ scale: 0.9 }}
@@ -456,15 +495,13 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
             </motion.button>
           )}
 
-          {/* White Avatar Circle with Anton Initial & Realtime Pulse */}
-          <div className="relative w-9 h-9 rounded-full bg-white text-tide flex items-center justify-center font-display text-[16px] shadow-neu-raised flex-shrink-0">
-            {getInitials(partnerName)}
-            <span
-              className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-black ${
-                isPartnerOnline ? 'bg-emerald-400 animate-pulse' : 'bg-gray-400'
-              }`}
-            />
-          </div>
+          {/* User Avatar with Realtime Status Badge */}
+          <UserAvatar
+            profile={partnerProfile || { username: partnerDisplayName }}
+            size="sm"
+            isOnline={isPartnerOnline}
+            showOnlineStatus
+          />
 
           {/* Name & Realtime Status */}
           <div className="flex-1 min-w-0 flex flex-col justify-center">
@@ -472,7 +509,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
               className="font-display font-normal text-[20px] leading-tight text-white truncate origin-left transition-transform duration-100"
               style={{ transform: `scale(${1 - 0.12 * scrollProgress})` }}
             >
-              {partnerName}
+              {partnerDisplayName}
             </b>
             <div className="flex items-center gap-1.5 min-h-[14px]">
               <span
@@ -552,9 +589,9 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
                 <div className="w-14 h-14 rounded-2xl bg-field flex items-center justify-center text-ink font-bold text-2xl mb-3 shadow-neu-raised">
                   💬
                 </div>
-                <h3 className="font-display text-xl text-ink mb-1 tracking-wide">Hey there!</h3>
+                <h3 className="font-display text-xl text-ink mb-1 tracking-wide">Connect on Linksy</h3>
                 <p className="text-xs max-w-xs text-muted leading-relaxed">
-                  Send your first message to begin this private 1:1 conversation.
+                  Send a message to begin your secure private conversation.
                 </p>
               </motion.div>
             )}

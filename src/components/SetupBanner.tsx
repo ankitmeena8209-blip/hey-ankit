@@ -7,7 +7,7 @@ export const SetupBanner: React.FC = () => {
       <div className="max-w-md w-full bg-surface text-ink rounded-3xl p-6 sm:p-8 shadow-2xl border border-line flex flex-col gap-5">
         <div className="flex items-center gap-3">
           <div>
-            <h1 className="text-xl font-bold text-ink">Hey Ankit</h1>
+            <h1 className="text-xl font-bold text-ink">Linksy</h1>
             <p className="text-xs text-muted">Supabase Setup Required</p>
           </div>
         </div>
@@ -51,7 +51,7 @@ export const SetupBanner: React.FC = () => {
         </div>
 
         <div className="text-[11px] text-muted text-center pt-2 border-t border-line">
-          © Being Frzi · Hey Ankit
+          Linksy — by FRZI TOOLS • © 2026 FRZI TOOLS. All rights reserved.
         </div>
       </div>
     </div>

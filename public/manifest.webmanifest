@@ -1,7 +1,7 @@
 {
-  "name": "Hey Ankit",
-  "short_name": "Hey Ankit",
-  "description": "Hey Ankit — Private 1:1 chat app for friends and Ankit.",
+  "name": "Linksy",
+  "short_name": "Linksy",
+  "description": "Linksy — Connect. Chat. Belong. Published by FRZI TOOLS.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

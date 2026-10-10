@@ -1,6 +1,6 @@
-# Security Checklist & Architecture Audit — Hey Ankit
+# Security Checklist & Architecture Audit — Linksy (by FRZI TOOLS)
 
-This document outlines the security controls, validation rules, and automated protections built into **Hey Ankit**.
+This document outlines the security controls, validation rules, and automated protections built into **Linksy**.
 
 ---
 
@@ -10,7 +10,7 @@ This document outlines the security controls, validation rules, and automated pr
 |---|---|---|
 | **Synthetic Email Isolation** | `<username>@heyankit.invalid` | No real emails required. Users are identified solely by their chosen username. |
 | **Username Constraints** | DB check constraint & Regex `^[a-z0-9_]{3,20}$` | Enforces lowercase, alphanumeric, 3–20 character limits. Case-insensitive unique index prevents homograph or casing collision attacks. |
-| **Password Hygiene** | Client & server validation | Minimum 8 characters required. |
+| **Password Hygiene** | Client & server validation | Minimum 6 characters required. |
 | **Generic Error Responses** | AuthContext login handler | Returns `"Invalid username or password."` for bad credentials to prevent username enumeration. |
 | **Session Persistence** | Supabase SDK storage | Uses standard local storage session tokens with automatic refresh. No insecure custom cookies. |
 
@@ -20,26 +20,27 @@ This document outlines the security controls, validation rules, and automated pr
 
 | Control | Mechanism | Verification / Guarantee |
 |---|---|---|
-| **Default User Role** | Postgres trigger `handle_new_user()` | Every new user is hardcoded to role `'user'` and status `'active'`. Client cannot pass custom roles. |
+| **Default User Role** | Postgres trigger `handle_new_user()` | Every new user is initialized to role `'user'` and status `'active'`. Client cannot pass custom roles. |
 | **Self-Promotion Block** | Postgres trigger `trg_protect_profile_privileges()` | An update attempt on `profiles.role` or `profiles.status` by anyone other than service-role or existing admin throws an exception: `"Cannot modify user role"`. |
 | **Server-Side Admin Check** | `public.is_admin(p_user_id)` | Stored SQL function verifies role in the database. Client-side boolean flags are never trusted for authorization. |
-| **Service Role Isolation** | Supabase Edge Function Secret | Service-role key is stored strictly as an environment secret in the Edge Function runtime. It is never exposed in the Vite client or bundle. |
+| **Service Role Isolation** | Environment Secret | Service-role key is stored strictly as a server environment secret. It is never exposed in the client bundle. |
 
 ---
 
-## 3. Database Row Level Security (RLS)
+## 3. Database Row Level Security (RLS) & Multi-User Privacy
 
-All 4 tables have RLS enabled with explicit restrictive policies:
+All tables have RLS enabled with explicit restrictive policies:
 
 | Table | Operation | Policy Enforcement |
 |---|---|---|
-| `profiles` | SELECT | User can only read their own profile, OR admin can read all profiles. |
-| `profiles` | UPDATE | User can only update their own profile (trigger blocks role/status tampering). |
-| `conversations` | SELECT | `user_id = auth.uid()` OR `admin_id = auth.uid()` OR `is_admin(auth.uid())`. Cross-user inspection is impossible. |
-| `messages` | SELECT | `is_conversation_member(conversation_id, auth.uid())` AND caller status is `'active'`. |
+| `profiles` | SELECT | Active profiles are visible to authenticated users for directory discovery (`status = 'active'`). Inactive/disabled users remain invisible. |
+| `profiles` | UPDATE | User can only update their own profile (`id = auth.uid()`). Trigger blocks role/status tampering. |
+| `conversations` | SELECT | `user_id = auth.uid() OR recipient_id = auth.uid() OR admin_id = auth.uid() OR is_admin(auth.uid())`. Non-members cannot view private conversations. |
+| `conversations` | INSERT | `user_id = auth.uid() OR recipient_id = auth.uid()`. Cross-user conversation creation without membership is rejected. |
+| `messages` | SELECT | `is_conversation_member(conversation_id, auth.uid())` AND caller status is `'active'`. Non-members cannot read messages. |
 | `messages` | INSERT | `sender_id = auth.uid()` AND `is_conversation_member(...)` AND caller status is `'active'`. Forged `sender_id` inserts are rejected. |
 | `messages` | UPDATE | Only `read_at` updates allowed for conversation members; edits must go through the `edit_message` RPC. |
-| `messages` | DELETE | Direct client deletes are forbidden (only admin or `unsend_message` RPC). |
+| `messages` | DELETE | Direct client deletes are forbidden (must use `unsend_message` RPC). |
 | `message_audit` | SELECT | Restricted strictly to `is_admin(auth.uid())`. Regular users cannot query audit records. |
 
 ---
@@ -55,21 +56,12 @@ All 4 tables have RLS enabled with explicit restrictive policies:
 
 ---
 
-## 5. Private Storage Security
+## 5. Storage Security
 
-| Bucket Property | Value | Security Benefit |
-|---|---|---|
-| **Bucket Visibility** | `public = false` | Files are not publicly accessible via static URLs. |
-| **Max File Size** | `5242880` (5 MB) | Server-side validation drops oversized payloads. |
-| **Allowed MIME Types** | `['image/jpeg', 'image/png', 'image/webp']` | No SVG or HTML files that could execute malicious scripts; no GIF animation overhead. |
-| **Path Convention** | `{conversation_id}/{uuid}.{ext}` | Path ties the file directly to conversation ID. |
-| **Storage RLS** | Tied to conversation membership | A user cannot fetch or sign images belonging to another conversation. |
-| **URL Expiry** | 3600 seconds (1 hour) | Signed URLs expire automatically. |
+- **Chat Images Bucket**: Private bucket with RLS ensuring only conversation participants can view or upload images. Signed URLs with 1-hour expiration are used for media viewing.
+- **Avatars Bucket**: Public bucket with 2MB file limit and image MIME-type restriction for user profile photos.
 
 ---
 
-## 6. Realtime Channel Security
-
-- **Broadcast Channel**: Scoped to `typing:{conversation_id}`.
-- **Postgres Changes**: Subscription is filtered by `conversation_id=eq.{id}`.
-- **Client Deduplication**: Messages deduplicated by unique ID on client side to prevent re-render flickers or race conditions.
+Linksy — by FRZI TOOLS  
+© 2026 FRZI TOOLS. All rights reserved.

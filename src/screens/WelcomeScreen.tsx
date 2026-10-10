@@ -28,7 +28,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGoSignup, onGoLo
           transition={{ duration: 0.5, delay: 0.25, ease: [0.2, 1.35, 0.4, 1] }}
         >
           <h1 className="font-display text-[46px] leading-tight text-ink tracking-tight">
-            Hey Ankit
+            Linksy
           </h1>
         </motion.div>
 
@@ -38,7 +38,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGoSignup, onGoLo
           transition={{ duration: 0.45, delay: 0.35, ease: [0.2, 1.35, 0.4, 1] }}
           className="text-[13px] font-medium text-muted mb-2"
         >
-          Private chat. Just us.
+          Connect. Chat. Belong.
         </motion.p>
 
         <motion.div
@@ -72,10 +72,12 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGoSignup, onGoLo
         </motion.div>
 
         {/* Footer */}
-        <footer className="w-full text-center pt-5 text-[11px] font-semibold text-muted/75 tracking-wider uppercase">
-          © Being Frzi
+        <footer className="w-full text-center pt-5 pb-1 flex flex-col gap-0.5 text-[11px] font-medium text-muted/75">
+          <span className="font-semibold text-ink/75">Linksy — by FRZI TOOLS</span>
+          <span className="text-[10px] text-muted/60">© 2026 FRZI TOOLS. All rights reserved.</span>
         </footer>
       </div>
     </div>
   );
 };
+
