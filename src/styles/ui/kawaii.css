@@ -1,0 +1,172 @@
+/* ===== UI 5: Pink Gingham (ref 5) ===== */
+:root[data-ui="kawaii"] {
+  --page: #f6c9db;
+  --bg: repeating-linear-gradient(0deg, rgba(246, 150, 190, 0.34) 0 34px, transparent 34px 68px),
+    repeating-linear-gradient(90deg, rgba(246, 150, 190, 0.34) 0 34px, transparent 34px 68px),
+    #fff7f2;
+  --ink: #6b3050;
+  --mu: #8d5d78;
+  --ln: #3b2a34;
+  --lnc: #3b2a34;
+  --hs: #3b2a34;
+
+  /* Header / Tide - Cute Pink Band with hard border offset shadow */
+  --hb: #b84d77;
+  --hi: #ffffff;
+  --hbd: 0;
+  --hbl: none;
+  --hsh: 0 5px 0 #3b2a34;
+  --tr: 0 0 26px 26px;
+  --tin: 0;
+  --wm: none;
+  --mk: 0px;
+  --edge: none;
+
+  /* Cards */
+  --cb: #fffaf6;
+  --cbd: 2px solid var(--lnc);
+  --csh: 6px 6px 0 var(--hs);
+  --cbl: none;
+  --cr: 26px;
+  --cp: 18px;
+
+  /* Form & Inputs */
+  --fl-bg: #efeff3;
+  --fl-bd: 2px solid var(--lnc);
+  --fl-sh: 3px 3px 0 var(--hs);
+  --fl-r: 999px;
+  --fl-ink: #5a2a45;
+  --fl-ph: #8d5d78;
+
+  /* Primary Button */
+  --bt-bg: #b84d77;
+  --bt-ink: #ffffff;
+  --bt-sh: 4px 4px 0 var(--hs);
+  --bt-r: 999px;
+  --bt-bd: 2px solid var(--lnc);
+
+  /* Ghost Button */
+  --gh-bg: #ffffff;
+  --gh-ink: #6b3050;
+  --gh-bd: 2px solid var(--lnc);
+  --gh-sh: 3px 3px 0 var(--hs);
+
+  /* Message Bubbles */
+  --sn-bg: #b84d77;
+  --sn-ink: #ffffff;
+  --sn-sh: 3px 3px 0 var(--hs);
+  --rc-bg: #ffffff;
+  --rc-ink: #6b3050;
+  --rc-bd: 2px solid var(--lnc);
+  --rc-sh: 3px 3px 0 var(--hs);
+  --br: 18px;
+
+  /* Navigation Tabs */
+  --tb-bg: #ffffff;
+  --tb-bd: 2px solid var(--lnc);
+  --tb-sh: 4px 4px 0 var(--hs);
+  --tb-ink: #8d5d78;
+  --tb-ind: #b84d77;
+  --tb-indi: #ffffff;
+  --tb-r: 26px;
+  --tb-bl: none;
+
+  /* Composer */
+  --cm-bg: #ffffff;
+  --cm-bd: 2px solid var(--lnc);
+  --cm-sh: 4px 4px 0 var(--hs);
+  --cm-bl: none;
+  --cm-r: 26px;
+
+  /* Status & Accents */
+  --ok: #0b8a5f;
+  --bad: #c4264a;
+  --acc: #b84d77;
+  --pl-bg: #ffffff;
+  --pl-bd: 2px solid var(--lnc);
+  --px: #c4264a;
+  --pc: #0b8a5f;
+  --dis-bg: #e4d3dc;
+  --dis-ink: #8d5d78;
+
+  /* Surfaces & Avatars */
+  --hav-bg: #ffffff;
+  --hav-ink: #b84d77;
+  --av-bg: #b84d77;
+  --av-ink: #ffffff;
+  --pop: #fffaf6;
+  --surface: #fffaf6;
+  --meta-color: #b84d77;
+
+  /* Typography */
+  --fnt-d: Chewy, cursive, sans-serif;
+  --dw: 400;
+  --dt: 0.01em;
+  --fnt-b: Quicksand, system-ui, sans-serif;
+
+  /* Motion - Snappy Boing Spring */
+  --sp: cubic-bezier(0.5, 2.2, 0.5, 1);
+  --press: translate(3px, 3px);
+  --rise: translateY(16px) scale(0.8);
+
+  --rw-ink: #6b3050;
+  --rw-mu: #8d5d78;
+  --top-ink: #ffffff;
+  --pad-chat: 96px;
+  --pad-inbox: 156px;
+  --hc-top: 14px;
+  --hi-top: 16px;
+  --auth-top: 92px;
+  --blk-ink: #6b3050;
+  --blk-mu: #8d5d78;
+  --play-d: none;
+  --prim-d: flex;
+  --sht-bg: transparent;
+  --sht-clip: none;
+  --sht-mt: 0px;
+  --l1: #141416;
+  --l2: #222326;
+  --l3: #323438;
+}
+
+:root[data-ui="kawaii"][data-theme="dark"] {
+  --page: #2a1823;
+  --bg: repeating-linear-gradient(0deg, rgba(246, 150, 190, 0.13) 0 34px, transparent 34px 68px),
+    repeating-linear-gradient(90deg, rgba(246, 150, 190, 0.13) 0 34px, transparent 34px 68px),
+    #2a1823;
+  --ink: #ffe7f1;
+  --mu: #e0a8c4;
+  --lnc: #ffb7d6;
+  --hs: #12070d;
+
+  --cb: #3a2433;
+  --fl-bg: #2f1d29;
+  --fl-ink: #ffe7f1;
+  --fl-ph: #e0a8c4;
+
+  --gh-bg: #3a2433;
+  --gh-ink: #ffe7f1;
+
+  --rc-bg: #3a2433;
+  --rc-ink: #ffe7f1;
+
+  --tb-bg: #3a2433;
+  --tb-ink: #e0a8c4;
+
+  --cm-bg: #3a2433;
+  --pl-bg: #3a2433;
+  --px: #ff8fa3;
+  --pc: #34d399;
+
+  --pop: #3a2433;
+  --surface: #3a2433;
+  --meta-color: #2a1823;
+
+  --rw-ink: #ffe7f1;
+  --rw-mu: #e0a8c4;
+  --blk-ink: #ffe7f1;
+  --blk-mu: #e0a8c4;
+  --dis-bg: #4a3342;
+  --dis-ink: #e0a8c4;
+  --hsh: 0 5px 0 #12070d;
+}

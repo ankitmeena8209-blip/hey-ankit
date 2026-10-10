@@ -1,0 +1,164 @@
+/* ===== UI 4: Lavender Clay (ref 4) ===== */
+:root[data-ui="clay"] {
+  --page: #cdbdf0;
+  --bg: linear-gradient(180deg, #cdbbeb, #c3aee6);
+  --ink: #4f3d85;
+  --mu: #6f5ca6;
+  --ln: rgba(111, 92, 166, 0.2);
+
+  /* Header / Tide - Purple puffy clay band */
+  --hb: #7b63c6;
+  --hi: #ffffff;
+  --hbd: 0;
+  --hbl: none;
+  --hsh: inset 0 -6px 10px rgba(60, 40, 120, 0.3), inset 0 6px 10px rgba(255, 255, 255, 0.25), 0 10px 22px rgba(70, 50, 130, 0.3);
+  --tr: 0 0 34px 34px;
+  --tin: 0;
+  --wm: none;
+  --mk: 0px;
+  --edge: none;
+
+  /* Cards - Puffy Clay Card */
+  --cb: #f6efea;
+  --cbd: 0;
+  --csh: 0 12px 0 -2px rgba(110, 85, 170, 0.15), 0 22px 36px rgba(80, 60, 140, 0.3), inset 0 5px 8px #ffffff, inset 0 -6px 10px rgba(140, 110, 190, 0.14);
+  --cbl: none;
+  --cr: 30px;
+  --cp: 18px;
+
+  /* Form & Inputs */
+  --fl-bg: #fbf6f2;
+  --fl-bd: 0;
+  --fl-sh: inset 0 3px 6px rgba(120, 95, 175, 0.18), inset 0 -2px 4px #ffffff;
+  --fl-r: 999px;
+  --fl-ink: #4f3d85;
+  --fl-ph: #6f5ca6;
+
+  /* Primary Button - Squishy 3D Clay Pill */
+  --bt-bg: #7b63c6;
+  --bt-ink: #ffffff;
+  --bt-sh: 0 7px 0 #5d47a3, 0 14px 20px rgba(70, 50, 130, 0.3), inset 0 4px 6px rgba(255, 255, 255, 0.35);
+  --bt-r: 999px;
+  --bt-bd: 0;
+
+  /* Ghost Button */
+  --gh-bg: #fbf6f2;
+  --gh-ink: #4f3d85;
+  --gh-bd: 0;
+  --gh-sh: 0 5px 0 rgba(120, 95, 175, 0.18), inset 0 3px 5px #ffffff;
+
+  /* Message Bubbles */
+  --sn-bg: #7b63c6;
+  --sn-ink: #ffffff;
+  --sn-sh: 0 4px 0 #5d47a3, inset 0 3px 5px rgba(255, 255, 255, 0.3);
+  --rc-bg: #f6efea;
+  --rc-ink: #4f3d85;
+  --rc-bd: 0;
+  --rc-sh: 0 4px 0 rgba(120, 95, 175, 0.2), inset 0 3px 5px #ffffff;
+  --br: 22px;
+
+  /* Navigation Tabs */
+  --tb-bg: #f6efea;
+  --tb-bd: 0;
+  --tb-sh: 0 8px 0 -2px rgba(110, 85, 170, 0.15), 0 16px 28px rgba(80, 60, 140, 0.28), inset 0 4px 6px #ffffff;
+  --tb-ink: #6f5ca6;
+  --tb-ind: #7b63c6;
+  --tb-indi: #ffffff;
+  --tb-r: 28px;
+  --tb-bl: none;
+
+  /* Composer */
+  --cm-bg: #f6efea;
+  --cm-bd: 0;
+  --cm-sh: 0 8px 0 -2px rgba(110, 85, 170, 0.15), 0 16px 28px rgba(80, 60, 140, 0.28), inset 0 4px 6px #ffffff;
+  --cm-bl: none;
+  --cm-r: 28px;
+
+  /* Status & Accents */
+  --ok: #1f9d6b;
+  --bad: #c4264a;
+  --acc: #7b63c6;
+  --pl-bg: #7b63c6;
+  --pl-bd: 0;
+  --px: #ffd6dc;
+  --pc: #c4f7de;
+  --dis-bg: rgba(111, 92, 166, 0.18);
+  --dis-ink: #6f5ca6;
+
+  /* Surfaces & Avatars */
+  --hav-bg: #f6efea;
+  --hav-ink: #7b63c6;
+  --av-bg: #7b63c6;
+  --av-ink: #ffffff;
+  --pop: #f6efea;
+  --surface: #f6efea;
+  --meta-color: #7b63c6;
+
+  /* Typography */
+  --fnt-d: Fredoka, system-ui, cursive, sans-serif;
+  --dw: 600;
+  --dt: 0;
+  --fnt-b: Nunito, system-ui, sans-serif;
+
+  /* Motion - Squishy spring with press squish */
+  --sp: cubic-bezier(0.3, 1.6, 0.45, 1);
+  --press: translateY(4px) scale(1.03, 0.95);
+  --rise: translateY(28px) scale(0.92, 1.08);
+
+  --rw-ink: #4f3d85;
+  --rw-mu: #6f5ca6;
+  --top-ink: #ffffff;
+  --pad-chat: 100px;
+  --pad-inbox: 158px;
+  --hc-top: 16px;
+  --hi-top: 16px;
+  --auth-top: 92px;
+  --blk-ink: #4f3d85;
+  --blk-mu: #6f5ca6;
+  --play-d: none;
+  --prim-d: flex;
+  --sht-bg: transparent;
+  --sht-clip: none;
+  --sht-mt: 0px;
+  --l1: #141416;
+  --l2: #222326;
+  --l3: #323438;
+}
+
+:root[data-ui="clay"][data-theme="dark"] {
+  --page: #2a2046;
+  --bg: linear-gradient(180deg, #2a2046, #231a3d);
+  --ink: #efe8ff;
+  --mu: #b5a6e0;
+
+  --cb: #3a2f5e;
+  --csh: 0 12px 0 -2px rgba(0, 0, 0, 0.25), 0 22px 36px rgba(0, 0, 0, 0.4), inset 0 4px 6px rgba(255, 255, 255, 0.1);
+
+  --fl-bg: #2c2350;
+  --fl-sh: inset 0 3px 6px rgba(0, 0, 0, 0.4);
+  --fl-ink: #efe8ff;
+  --fl-ph: #b5a6e0;
+
+  --gh-bg: #2c2350;
+  --gh-ink: #efe8ff;
+  --gh-sh: 0 5px 0 rgba(0, 0, 0, 0.25);
+
+  --rc-bg: #3a2f5e;
+  --rc-ink: #efe8ff;
+  --rc-sh: 0 4px 0 rgba(0, 0, 0, 0.25);
+
+  --tb-bg: #3a2f5e;
+  --tb-ink: #b5a6e0;
+  --cm-bg: #3a2f5e;
+
+  --pop: #3a2f5e;
+  --surface: #3a2f5e;
+  --meta-color: #2a2046;
+
+  --rw-ink: #efe8ff;
+  --rw-mu: #b5a6e0;
+  --blk-ink: #efe8ff;
+  --blk-mu: #b5a6e0;
+  --dis-bg: rgba(255, 255, 255, 0.12);
+  --dis-ink: #b5a6e0;
+}

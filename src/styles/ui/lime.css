@@ -1,0 +1,167 @@
+/* ===== UI 3: Lime Pop (ref 3) ===== */
+:root[data-ui="lime"] {
+  --page: #8b9dff;
+  --bg: #fff9e3;
+  --ink: #0a1038;
+  --mu: #4b5180;
+  --ln: rgba(10, 16, 56, 0.15);
+
+  /* Header / Tide - Vibrant Lime Band with rounded bottom */
+  --hb: #b2ee05;
+  --hi: #0a1038;
+  --hbd: 0;
+  --hbl: none;
+  --hsh: none;
+  --tr: 0 0 30px 30px;
+  --tin: 0;
+  --wm: none;
+  --mk: 0px;
+  --edge: none;
+
+  /* Cards */
+  --cb: #b2ee05;
+  --cbd: 0;
+  --csh: none;
+  --cbl: none;
+  --cr: 30px;
+  --cp: 18px;
+
+  /* Form & Inputs */
+  --fl-bg: rgba(10, 16, 56, 0.1);
+  --fl-bd: 2px solid transparent;
+  --fl-sh: none;
+  --fl-r: 18px;
+  --fl-ink: #0a1038;
+  --fl-ph: rgba(10, 16, 56, 0.66);
+
+  /* Primary Button */
+  --bt-bg: #0a1038;
+  --bt-ink: #fff9e3;
+  --bt-sh: none;
+  --bt-r: 18px;
+  --bt-bd: 0;
+
+  /* Ghost Button */
+  --gh-bg: transparent;
+  --gh-ink: #0a1038;
+  --gh-bd: 2px solid #8fc700;
+  --gh-sh: none;
+
+  /* Message Bubbles */
+  --sn-bg: #0a1038;
+  --sn-ink: #fff9e3;
+  --sn-sh: none;
+  --rc-bg: #e6fa8c;
+  --rc-ink: #0a1038;
+  --rc-bd: 0;
+  --rc-sh: none;
+  --br: 22px;
+
+  /* Navigation Tabs */
+  --tb-bg: #0a1038;
+  --tb-bd: 0;
+  --tb-sh: none;
+  --tb-ink: rgba(255, 249, 227, 0.72);
+  --tb-ind: #b2ee05;
+  --tb-indi: #0a1038;
+  --tb-r: 26px;
+  --tb-bl: none;
+
+  /* Composer */
+  --cm-bg: #ffffff;
+  --cm-bd: 2px solid #0a1038;
+  --cm-sh: none;
+  --cm-bl: none;
+  --cm-r: 26px;
+
+  /* Accents & Status */
+  --ok: #12803f;
+  --bad: #b3261e;
+  --acc: #0a1038;
+  --pl-bg: #0a1038;
+  --pl-bd: 0;
+  --px: #ff8f8f;
+  --pc: #b2ee05;
+  --dis-bg: rgba(10, 16, 56, 0.16);
+  --dis-ink: rgba(10, 16, 56, 0.6);
+
+  /* Surfaces & Avatars */
+  --hav-bg: #0a1038;
+  --hav-ink: #fff9e3;
+  --av-bg: #b2ee05;
+  --av-ink: #0a1038;
+  --pop: #fff9e3;
+  --surface: #fff9e3;
+  --meta-color: #b2ee05;
+
+  /* Typography */
+  --fnt-d: Inter, system-ui, sans-serif;
+  --dw: 800;
+  --dt: -0.045em;
+  --fnt-b: Inter, system-ui, sans-serif;
+
+  /* Motion - Snappy bouncy spring */
+  --sp: cubic-bezier(0.34, 1.8, 0.5, 1);
+  --press: scale(0.9);
+  --rise: translateY(34px) rotate(-3deg);
+
+  --rw-ink: #0a1038;
+  --rw-mu: #4b5180;
+  --top-ink: #0a1038;
+  --pad-chat: 96px;
+  --pad-inbox: 156px;
+  --hc-top: 14px;
+  --hi-top: 16px;
+  --auth-top: 150px;
+  --blk-ink: #0a1038;
+  --blk-mu: #4b5180;
+  --play-d: none;
+  --prim-d: flex;
+  --sht-bg: transparent;
+  --sht-clip: none;
+  --sht-mt: 0px;
+  --l1: #141416;
+  --l2: #222326;
+  --l3: #323438;
+}
+
+:root[data-ui="lime"][data-theme="dark"] {
+  --page: #2a3170;
+  --bg: #0a1038;
+  --ink: #fff9e3;
+  --mu: #b8bdf0;
+
+  --hav-bg: #fff9e3;
+  --hav-ink: #0a1038;
+  --bt-bg: #b2ee05;
+  --bt-ink: #0a1038;
+
+  --gh-ink: #fff9e3;
+  --gh-bd: 2px solid #b2ee05;
+
+  --sn-bg: #b2ee05;
+  --sn-ink: #0a1038;
+  --rc-bg: #1c2468;
+  --rc-ink: #fff9e3;
+
+  --tb-bg: #141b52;
+  --cm-bg: #141b52;
+  --cm-bd: 2px solid #b2ee05;
+
+  --fl-ink: #0a1038;
+  --fl-ph: rgba(10, 16, 56, 0.66);
+  --ln: rgba(255, 249, 227, 0.2);
+
+  --pop: #141b52;
+  --surface: #141b52;
+  --meta-color: #0a1038;
+
+  --rw-ink: #fff9e3;
+  --rw-mu: #b8bdf0;
+  --top-ink: #fff9e3;
+  --blk-ink: #fff9e3;
+  --blk-mu: #b8bdf0;
+  --av-bg: #b2ee05;
+  --dis-bg: rgba(255, 249, 227, 0.14);
+  --dis-ink: #b8bdf0;
+}
